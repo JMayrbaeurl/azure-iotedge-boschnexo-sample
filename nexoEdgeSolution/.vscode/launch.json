@@ -1,0 +1,48 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "CodeLens (Launch) - App",
+      "request": "launch",
+      "mainClass": "com.microsoft.samples.nexo.edgemodule.App",
+      "projectName": "nexopublisher"
+    },
+    {
+      "type": "java",
+      "name": "nexoPublisher Debug (Launch)",
+      "request": "launch",
+      "cwd": "${workspaceRoot}/modules/nexoPublisher",
+      "console": "internalConsole",
+      "stopOnEntry": false,
+      "mainClass": "com.microsoft.samples.nexo.edgemodule.App",
+      "projectName": "nexopublisher",
+      "env": {
+        "nexopublisher.protocol": "MQTT",
+        "nexopublisher.connectionString": "HostName=jmiottesting.azure-devices.net;DeviceId=nexopublisher;SharedAccessKey=pNRgkHS8pUeCguGuM2WvJfbYN4Z1rNgYu7NJMa1QmkE=",
+        "logging.level.com.microsoft.samples.nexo.edgemodule": "DEBUG"
+      }
+    },
+    {
+      "type": "java",
+      "name": "nexoPublisher Local Debug (java)",
+      "request": "launch",
+      "cwd": "${workspaceRoot}/modules/nexoPublisher",
+      "console": "internalConsole",
+      "stopOnEntry": true,
+      "mainClass": "com.microsoft.samples.nexo.edgemodule.App",
+      "projectName": "nexoPublisher",
+      "env": {
+        "EdgeHubConnectionString": "${config:azure-iot-edge.EdgeHubConnectionString}",
+        "EdgeModuleCACertificateFile": "${config:azure-iot-edge.EdgeModuleCACertificateFile}"
+      }
+    },
+    {
+      "type": "java",
+      "name": "nexoPublisher Remote Debug (java)",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": 5005
+    }
+  ]
+}
