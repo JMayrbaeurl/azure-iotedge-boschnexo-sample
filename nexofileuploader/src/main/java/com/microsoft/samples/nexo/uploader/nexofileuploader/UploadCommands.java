@@ -1,37 +1,42 @@
 package com.microsoft.samples.nexo.uploader.nexofileuploader;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
-import org.springframework.web.client.RestTemplate;
 
 @ShellComponent
 public class UploadCommands {
 
+    private ExecutorService executorService;
+    private AtomicBoolean doUpload;
+
     @ShellMethod("Uploads a file to IoT Hub using the Nexo Publisher")
     public String upload(String url, String filepath) throws IOException {
 
-        // read file contents
-        String content = new String(Files.readAllBytes(Paths.get(filepath)));
-        
-        RestTemplate template = new RestTemplate();
+        FileUploader uploader = new FileUploader(url);
+        return uploader.uploadFile(filepath) ? "DONE" : "ERROR";
+    }
 
-         // set headers
-         HttpHeaders headers = new HttpHeaders();
-         headers.setContentType(MediaType.APPLICATION_JSON);
-         HttpEntity<String> entity = new HttpEntity<String>(content, headers);
+    @ShellMethod("Starts uploading files from folder")
+    public void startUpload(String url, String folderPath) throws IOException {
 
-        // send request and parse result
-        ResponseEntity<String> response = template.exchange(url, HttpMethod.POST, entity, String.class);
+        if (this.executorService == null)
+            this.executorService = Executors.newSingleThreadExecutor();
 
-        return response.toString();
+        FileUploader uploader = new FileUploader(url);
+        uploader.uploadAllFilesInFolder(folderPath);
+        this.doUpload.set(true);
+
+        this.executorService.submit(new FileUploaderTask(uploader, folderPath, this.doUpload));
+    }
+
+    @ShellMethod("Stops uploading files from folder")
+    public void stopUpload() {
+
+        this.doUpload.set(false);
     }
 }
