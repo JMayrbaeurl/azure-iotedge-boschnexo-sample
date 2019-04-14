@@ -17,4 +17,11 @@ public class App {
 		return new RestTemplate();
 	}
 
+	@Bean
+    public FileUploader getUploader() {
+        FileUploader uploader = new FileUploader();
+        uploader.setDeleteFilesAfterUpload(true);
+
+        return uploader;
+    }
 }

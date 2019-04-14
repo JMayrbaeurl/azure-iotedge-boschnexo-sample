@@ -5,6 +5,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.shell.standard.ShellComponent;
 import org.springframework.shell.standard.ShellMethod;
 
@@ -12,13 +13,21 @@ import org.springframework.shell.standard.ShellMethod;
 public class UploadCommands {
 
     private ExecutorService executorService;
-    private AtomicBoolean doUpload;
+    private AtomicBoolean doUpload = new AtomicBoolean(false);
+
+    @Autowired
+    private FileUploader uploader;
 
     @ShellMethod("Uploads a file to IoT Hub using the Nexo Publisher")
     public String upload(String url, String filepath) throws IOException {
 
-        FileUploader uploader = new FileUploader(url);
-        return uploader.uploadFile(filepath) ? "DONE" : "ERROR";
+         return uploader.uploadFile(url, filepath) ? "DONE" : "ERROR";
+    }
+
+    @ShellMethod("Upload all files from a folder to IoT Hub using the Nexo Publisher")
+    public String uploadAll(String url, String folderpath) throws IOException {
+
+         return uploader.uploadAllFilesInFolder(url, folderpath) != null ? "DONE" : "ERROR";
     }
 
     @ShellMethod("Starts uploading files from folder")
@@ -27,16 +36,16 @@ public class UploadCommands {
         if (this.executorService == null)
             this.executorService = Executors.newSingleThreadExecutor();
 
-        FileUploader uploader = new FileUploader(url);
-        uploader.uploadAllFilesInFolder(folderPath);
+        uploader.uploadAllFilesInFolder(url, folderPath);
         this.doUpload.set(true);
 
-        this.executorService.submit(new FileUploaderTask(uploader, folderPath, this.doUpload));
+        this.executorService.submit(new FileUploaderTask(uploader, url, folderPath, this.doUpload));
     }
 
     @ShellMethod("Stops uploading files from folder")
     public void stopUpload() {
 
         this.doUpload.set(false);
+        this.executorService.shutdown();
     }
 }

@@ -8,7 +8,9 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -66,9 +68,31 @@ public class FileUploaderTests {
 		Files.copy(new ByteArrayInputStream(content.getBytes("UTF8")), createdFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 		// FileUploader call
-		Assert.isTrue(uploader.uploadFile(createdFile.getAbsolutePath()), "Upload failed");
+		Assert.isTrue(uploader.uploadFile(uploadURL, createdFile.getAbsolutePath()), "Upload failed");
 		Assert.isTrue(!createdFile.exists(), "Didn't delete file after upload");
 
+		mockServer.verify();
+	}
+
+	@Test
+	public void multipleFileseUpload() throws URISyntaxException, IOException {
+		
+		Assert.notNull(this.restTemplate, "Did not load");
+
+		mockServer.expect(ExpectedCount.times(3), requestTo(new URI(this.uploadURL)))
+		.andExpect(method(HttpMethod.POST))
+		.andRespond(withStatus(HttpStatus.OK)
+		.contentType(MediaType.APPLICATION_JSON));
+
+		String content = "{ \"Test\" : \"A value\"}";
+		File folder = temporaryFolder.newFolder("test");
+		Files.copy(new ByteArrayInputStream(content.getBytes("UTF8")), Paths.get(folder.toPath().toString(), "first.txt"));
+		Files.copy(new ByteArrayInputStream(content.getBytes("UTF8")), Paths.get(folder.toPath().toString(), "second.txt"));
+		Files.copy(new ByteArrayInputStream(content.getBytes("UTF8")), Paths.get(folder.toPath().toString(), "third.txt"));
+
+		// FileUploader call
+		List<String> uploads = uploader.uploadAllFilesInFolder(uploadURL, folder.getAbsolutePath());
+		Assert.isTrue(uploads != null && uploads.size() == 3, "Upload failed");
 		mockServer.verify();
 	}
 

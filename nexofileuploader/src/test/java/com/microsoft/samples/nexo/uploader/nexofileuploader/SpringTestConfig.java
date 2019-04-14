@@ -17,7 +17,7 @@ public class SpringTestConfig {
 
     @Bean
     public FileUploader getUploader() {
-        FileUploader uploader = new FileUploader("http://localhost:8080/publish");
+        FileUploader uploader = new FileUploader();
         uploader.setDeleteFilesAfterUpload(true);
 
         return uploader;

@@ -2,8 +2,9 @@ package com.microsoft.samples.nexo.uploader.nexofileuploader;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,20 +24,14 @@ public class FileUploader {
 
     private final static Logger logger = LoggerFactory.getLogger(FileUploader.class);
 
-    private String uploadURL;
-
     private boolean deleteFilesAfterUpload = true;
 
     @Autowired
     private RestTemplate restTemplate;
 
-    public FileUploader(String url) {
-        this.uploadURL = url;
+    public boolean uploadFile(final String uploadURL, final String filepath) throws IOException {
 
-        Assert.hasText(url, "Upload URL must not be empty");
-    }
-
-    public boolean uploadFile(final String filepath) throws IOException {
+        Assert.hasText(uploadURL, "Parameter uploadURL must not be empty");
 
         Assert.hasText(filepath, "Parameter filepath must not be empty");
         File file = new File(filepath);
@@ -45,11 +40,23 @@ public class FileUploader {
         logger.debug("Reading contents of file '" + filepath + "'");
 
         // read file contents
-        String content = new String(Files.readAllBytes(Paths.get(filepath)));
+        String content;
+        RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+        FileChannel channel = randomAccessFile.getChannel();
+        channel.lock();
+        try {
+            long fileSize = channel.size();
+            ByteBuffer buffer = ByteBuffer.allocate((int) fileSize);
+            channel.read(buffer);
+            buffer.flip();
+            content = new String(buffer.array());
+        } finally {
+            channel.close(); randomAccessFile.close();
+        }
                 
-        logger.debug("Now uploading file contents to " + this.uploadURL);
+        logger.debug("Now uploading file contents to " + uploadURL);
         // send request and parse result
-        ResponseEntity<String> response = this.restTemplate.exchange(this.uploadURL, HttpMethod.POST, 
+        ResponseEntity<String> response = this.restTemplate.exchange(uploadURL, HttpMethod.POST, 
             this.createHttpEntity(content), String.class);
 
         logger.debug("Upload responded with " + response.toString());
@@ -62,18 +69,22 @@ public class FileUploader {
         return result;
     }
 
-    public List<String> uploadAllFilesInFolder(final String folderPath) throws IOException {
+    public List<String> uploadAllFilesInFolder(final String uploadURL, final String folderPath) throws IOException {
+
+        Assert.hasText(uploadURL, "Parameter uploadURL must not be empty");
 
         Assert.hasText(folderPath, "Parameter folderPath must not be empty");
         File dir = new File(folderPath);
         Assert.isTrue(dir.exists(), "Directory '" + folderPath + "' doesn't exist");
         Assert.isTrue(dir.isDirectory(), "Directory '" + folderPath + "' is not a directory");
 
+        logger.debug("Uploading all files from " + folderPath);
+
         List<String> result = new ArrayList<String>();
 
         for (final File fileEntry : dir.listFiles()) {
             if (!fileEntry.isDirectory()) {
-                if (this.uploadFile(fileEntry.getAbsolutePath()))
+                if (this.uploadFile(uploadURL, fileEntry.getAbsolutePath()))
                     result.add(fileEntry.getAbsolutePath());
             }
         }
@@ -89,20 +100,6 @@ public class FileUploader {
         HttpEntity<String> entity = new HttpEntity<String>(forcontents, headers);
 
         return entity;
-    }
-
-    /**
-     * @return the uploadURL
-     */
-    public String getUploadURL() {
-        return uploadURL;
-    }
-
-    /**
-     * @param uploadURL the uploadURL to set
-     */
-    public void setUploadURL(String uploadURL) {
-        this.uploadURL = uploadURL;
     }
 
     /**

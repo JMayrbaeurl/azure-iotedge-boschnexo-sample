@@ -6,7 +6,10 @@
             "request": "launch",
             "mainClass": "com.microsoft.samples.nexo.uploader.nexofileuploader.App",
             "projectName": "nexofileuploader",
-            "console": "externalTerminal"
+            "console": "externalTerminal", 
+            "env": { 
+                "logging.level.com.microsoft.samples.nexo.edgemodule": "DEBUG"
+            }
         }
     ]
 }
