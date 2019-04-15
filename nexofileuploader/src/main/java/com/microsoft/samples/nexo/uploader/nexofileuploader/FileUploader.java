@@ -24,12 +24,10 @@ public class FileUploader {
 
     private final static Logger logger = LoggerFactory.getLogger(FileUploader.class);
 
-    private boolean deleteFilesAfterUpload = true;
-
     @Autowired
     private RestTemplate restTemplate;
 
-    public boolean uploadFile(final String uploadURL, final String filepath) throws IOException {
+    public boolean uploadFile(final String uploadURL, final String filepath, boolean deleteFilesAfterUpload) throws IOException {
 
         Assert.hasText(uploadURL, "Parameter uploadURL must not be empty");
 
@@ -62,14 +60,14 @@ public class FileUploader {
         logger.debug("Upload responded with " + response.toString());
 
         boolean result = response.getStatusCode() == HttpStatus.OK;
-        if (result && this.deleteFilesAfterUpload) {
+        if (result && deleteFilesAfterUpload) {
             file.delete();
         }
 
         return result;
     }
 
-    public List<String> uploadAllFilesInFolder(final String uploadURL, final String folderPath) throws IOException {
+    public List<String> uploadAllFilesInFolder(final String uploadURL, final String folderPath, boolean deleteFilesAfterUpload) throws IOException {
 
         Assert.hasText(uploadURL, "Parameter uploadURL must not be empty");
 
@@ -84,7 +82,7 @@ public class FileUploader {
 
         for (final File fileEntry : dir.listFiles()) {
             if (!fileEntry.isDirectory()) {
-                if (this.uploadFile(uploadURL, fileEntry.getAbsolutePath()))
+                if (this.uploadFile(uploadURL, fileEntry.getAbsolutePath(), deleteFilesAfterUpload))
                     result.add(fileEntry.getAbsolutePath());
             }
         }
@@ -100,20 +98,6 @@ public class FileUploader {
         HttpEntity<String> entity = new HttpEntity<String>(forcontents, headers);
 
         return entity;
-    }
-
-    /**
-     * @return the deleteFilesAfterUpload
-     */
-    public boolean isDeleteFilesAfterUpload() {
-        return deleteFilesAfterUpload;
-    }
-
-    /**
-     * @param deleteFilesAfterUpload the deleteFilesAfterUpload to set
-     */
-    public void setDeleteFilesAfterUpload(boolean deleteFilesAfterUpload) {
-        this.deleteFilesAfterUpload = deleteFilesAfterUpload;
     }
 
     /**

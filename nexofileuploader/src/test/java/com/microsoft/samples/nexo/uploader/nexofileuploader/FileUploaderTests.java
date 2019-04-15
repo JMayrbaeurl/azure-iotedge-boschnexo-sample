@@ -68,7 +68,7 @@ public class FileUploaderTests {
 		Files.copy(new ByteArrayInputStream(content.getBytes("UTF8")), createdFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 		// FileUploader call
-		Assert.isTrue(uploader.uploadFile(uploadURL, createdFile.getAbsolutePath()), "Upload failed");
+		Assert.isTrue(uploader.uploadFile(uploadURL, createdFile.getAbsolutePath(), true), "Upload failed");
 		Assert.isTrue(!createdFile.exists(), "Didn't delete file after upload");
 
 		mockServer.verify();
@@ -91,7 +91,7 @@ public class FileUploaderTests {
 		Files.copy(new ByteArrayInputStream(content.getBytes("UTF8")), Paths.get(folder.toPath().toString(), "third.txt"));
 
 		// FileUploader call
-		List<String> uploads = uploader.uploadAllFilesInFolder(uploadURL, folder.getAbsolutePath());
+		List<String> uploads = uploader.uploadAllFilesInFolder(uploadURL, folder.getAbsolutePath(), true);
 		Assert.isTrue(uploads != null && uploads.size() == 3, "Upload failed");
 		mockServer.verify();
 	}

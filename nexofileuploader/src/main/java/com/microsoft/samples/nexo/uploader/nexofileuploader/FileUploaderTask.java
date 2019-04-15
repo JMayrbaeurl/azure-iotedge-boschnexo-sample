@@ -50,7 +50,7 @@ public class FileUploaderTask implements Runnable {
                         logger.debug("Event kind:" + event.kind() + ". File affected: " + event.context() + ".");
                         String filename = ((Path)event.context()).toString();
                         try {
-                            this.fileUploader.uploadFile(this.uploadURL, this.folder + File.separatorChar + filename);
+                            this.fileUploader.uploadFile(this.uploadURL, this.folder + File.separatorChar + filename, true);
                         } catch (IOException ioEx) {
                             logger.error("Exception on upload of file '"+ filename + "' from watch folder " + this.folder + ". " + ioEx.getMessage());
                         }

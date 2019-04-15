@@ -21,13 +21,13 @@ public class UploadCommands {
     @ShellMethod("Uploads a file to IoT Hub using the Nexo Publisher")
     public String upload(String url, String filepath) throws IOException {
 
-         return uploader.uploadFile(url, filepath) ? "DONE" : "ERROR";
+         return uploader.uploadFile(url, filepath, false) ? "DONE" : "ERROR";
     }
 
     @ShellMethod("Upload all files from a folder to IoT Hub using the Nexo Publisher")
     public String uploadAll(String url, String folderpath) throws IOException {
 
-         return uploader.uploadAllFilesInFolder(url, folderpath) != null ? "DONE" : "ERROR";
+         return uploader.uploadAllFilesInFolder(url, folderpath, false) != null ? "DONE" : "ERROR";
     }
 
     @ShellMethod("Starts uploading files from folder")
@@ -36,7 +36,7 @@ public class UploadCommands {
         if (this.executorService == null)
             this.executorService = Executors.newSingleThreadExecutor();
 
-        uploader.uploadAllFilesInFolder(url, folderPath);
+        uploader.uploadAllFilesInFolder(url, folderPath, true);
         this.doUpload.set(true);
 
         this.executorService.submit(new FileUploaderTask(uploader, url, folderPath, this.doUpload));

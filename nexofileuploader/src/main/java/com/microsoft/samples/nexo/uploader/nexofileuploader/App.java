@@ -20,7 +20,6 @@ public class App {
 	@Bean
     public FileUploader getUploader() {
         FileUploader uploader = new FileUploader();
-        uploader.setDeleteFilesAfterUpload(true);
 
         return uploader;
     }

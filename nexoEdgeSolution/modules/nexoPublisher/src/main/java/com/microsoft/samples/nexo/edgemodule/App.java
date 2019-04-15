@@ -2,7 +2,9 @@ package com.microsoft.samples.nexo.edgemodule;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.sdk.iot.device.Message;
+import com.microsoft.samples.nexo.process.TighteningProcess;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,8 +58,8 @@ public class App implements CommandLineRunner {
             logger.info("Publishing to " + this.destination.destinationname());
             logger.debug("Sending message: " + pBody);
 
-            Message message = new Message(pBody);
-            message.setProperty("source", "nexopublisher");
+            TighteningProcess processInfo = this.readTighteningProcessFromBody(pBody);
+            Message message = this.createMessage(processInfo, pBody);
             try {
                 this.destination.sendEventAsync(message);
             } catch (IOException e) {
@@ -67,6 +69,40 @@ public class App implements CommandLineRunner {
         } else {
             logger.debug("Nothing to publish. Message is empty");
         }
+    }
+
+    private TighteningProcess readTighteningProcessFromBody(String pBody) {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        TighteningProcess process = null;
+        try {
+            process = objectMapper.readValue(pBody, TighteningProcess.class);
+        } catch (IOException e) {
+            logger.error("Exception on parsing message. " + e.getMessage());
+        }
+
+        return process;
+    }
+
+    private Message createMessage(final TighteningProcess process, final String jsonString) {
+
+        Message message = new Message(jsonString);
+        message.setProperty("source", "nexopublisher");
+
+        if (process != null) {
+            message.setProperty("nr", Integer.toString(process.getNr()));
+            message.setProperty("result", process.getResult());
+            //message.setProperty("channel", process.getChannel());
+            message.setProperty("prg_nr", Integer.toString(process.getPrgnr()));
+            message.setProperty("prg_name", process.getPrgname());
+            //message.setProperty("prg_date", process.getPrgdate());
+            message.setProperty("cycle", Integer.toString(process.getCycle()));
+            //message.setProperty("nominal torque", Double.toString(process.getNominaltorque()));
+            //message.setProperty("date", process.getDate());
+            message.setProperty("id_code", process.getIdcode());
+        }
+
+        return message;
     }
 
     @Bean
