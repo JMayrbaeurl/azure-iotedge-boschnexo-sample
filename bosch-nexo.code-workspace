@@ -9,5 +9,8 @@
 		{
 			"path": "processSamples"
 		}
-	]
+	],
+	"settings": {
+		"java.configuration.updateBuildConfiguration": "automatic"
+	}
 }
