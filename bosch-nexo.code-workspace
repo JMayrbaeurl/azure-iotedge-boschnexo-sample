@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "processSamples"
+		},
+		{
+			"path": "assets"
 		}
 	],
 	"settings": {
