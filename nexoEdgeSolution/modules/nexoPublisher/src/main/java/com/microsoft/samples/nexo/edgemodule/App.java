@@ -1,6 +1,7 @@
 package com.microsoft.samples.nexo.edgemodule;
 
 import java.io.IOException;
+import java.text.ParseException;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.sdk.iot.device.Message;
@@ -63,12 +64,34 @@ public class App implements CommandLineRunner {
             try {
                 this.destination.sendEventAsync(message);
             } catch (IOException e) {
-               logger.warn("Exception sending message to " + this.destination.destinationname() +
-                ". Message: " + e.getMessage());
+                logger.warn("Exception sending message to " + this.destination.destinationname() + ". Message: "
+                        + e.getMessage());
             }
         } else {
             logger.debug("Nothing to publish. Message is empty");
         }
+    }
+
+    @RequestMapping(value = "/stream", method = RequestMethod.POST, consumes = { "application/JSON" })
+    public void streamIoTHub(@RequestBody String pBody) {
+
+        Assert.notNull(this.destination, "Property destination must not be null. Check hub configuration");
+
+        if (pBody != null && pBody.length() > 0) {
+            logger.info("Streaming to " + this.destination.destinationname());
+            logger.debug("Sending message contents of: " + pBody);
+
+            TighteningProcess processInfo = this.readTighteningProcessFromBody(pBody);
+            ProcessTranslator translator = new ProcessTranslator(this.destination);
+            try {
+                translator.streamProcessInfoToDestination(processInfo);
+            } catch (ParseException e) {
+                logger.error("Exception streaming graph entries of message to " + this.destination.destinationname() + ". Message: "
+                    + e.getMessage());
+            }
+        } else {
+            logger.debug("Nothing to stream. Message is empty");
+        } 
     }
 
     private TighteningProcess readTighteningProcessFromBody(String pBody) {
@@ -88,6 +111,7 @@ public class App implements CommandLineRunner {
 
         Message message = new Message(jsonString);
         message.setProperty("source", "nexopublisher");
+        message.setProperty("messagetype", "process");
 
         if (process != null) {
             message.setProperty("nr", Integer.toString(process.getNr()));
