@@ -9,6 +9,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
  */
 public class TighteningStepGraphEntry {
 
+    private String idcode;
+    private int cycle;
+    private String steprow;
+    private String stepcol;
+    
+    private int stepIndex;
+    private int graphIndex;
+
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     private Date timestamp;
     private int angle;
@@ -60,6 +68,90 @@ public class TighteningStepGraphEntry {
      */
     public void setTorque(double torque) {
         this.torque = torque;
+    }
+
+    /**
+     * @return the idcode
+     */
+    public String getIdcode() {
+        return idcode;
+    }
+
+    /**
+     * @param idcode the idcode to set
+     */
+    public void setIdcode(String idcode) {
+        this.idcode = idcode;
+    }
+
+    /**
+     * @return the cycle
+     */
+    public int getCycle() {
+        return cycle;
+    }
+
+    /**
+     * @param cycle the cycle to set
+     */
+    public void setCycle(int cycle) {
+        this.cycle = cycle;
+    }
+
+    /**
+     * @return the steprow
+     */
+    public String getSteprow() {
+        return steprow;
+    }
+
+    /**
+     * @param steprow the steprow to set
+     */
+    public void setSteprow(String steprow) {
+        this.steprow = steprow;
+    }
+
+    /**
+     * @return the stepcol
+     */
+    public String getStepcol() {
+        return stepcol;
+    }
+
+    /**
+     * @param stepcol the stepcol to set
+     */
+    public void setStepcol(String stepcol) {
+        this.stepcol = stepcol;
+    }
+
+    /**
+     * @return the stepIndex
+     */
+    public int getStepIndex() {
+        return stepIndex;
+    }
+
+    /**
+     * @param stepIndex the stepIndex to set
+     */
+    public void setStepIndex(int stepIndex) {
+        this.stepIndex = stepIndex;
+    }
+
+    /**
+     * @return the graphIndex
+     */
+    public int getGraphIndex() {
+        return graphIndex;
+    }
+
+    /**
+     * @param graphIndex the graphIndex to set
+     */
+    public void setGraphIndex(int graphIndex) {
+        this.graphIndex = graphIndex;
     }
     
 }

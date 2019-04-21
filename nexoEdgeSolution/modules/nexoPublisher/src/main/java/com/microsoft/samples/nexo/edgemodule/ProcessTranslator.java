@@ -37,23 +37,37 @@ public class ProcessTranslator {
 
             ObjectMapper objectMapper = new ObjectMapper();
             int counter = 0;
+            int stepIndex = 0;
 
             for (TighteningStep step : processInfo.getTighteningsteps()) {
+
+                stepIndex++;
+
                 if (step.getGraph() != null && step.getGraph().getTimestamps() != null
                         && step.getGraph().getTimestamps().size() > 0) {
+
                     for (int i = 0; i < step.getGraph().getTimestamps().size(); i++) {
                         if (step.getGraph().getTimestamps().get(i) != null && step.getGraph().getAngles().get(i) != null
                                 && step.getGraph().getTorques().get(i) != null) {
+                                    
                             Date newDate = new Date();
                             newDate.setTime(
                                     startTime.getTime() + (long) (step.getGraph().getTimestamps().get(i) * 1000));
                             TighteningStepGraphEntry anEntry = new TighteningStepGraphEntry(newDate,
                                     step.getGraph().getAngles().get(i), step.getGraph().getTorques().get(i));
+                            anEntry.setIdcode(processInfo.getIdcode());
+                            anEntry.setCycle(processInfo.getCycle());
+                            anEntry.setSteprow(step.getRow());
+                            anEntry.setStepcol(step.getColumn());
+                            anEntry.setStepIndex(stepIndex);
+                            anEntry.setGraphIndex(i+1);
                             try {
                                 String jsonString = objectMapper.writeValueAsString(anEntry);
                                 Message message = new Message(jsonString);
                                 message.setProperty("source", "nexopublisher");
                                 message.setProperty("messagetype", "events");
+                                message.setProperty("channel", Integer.toString(processInfo.getCycle()));
+                                message.setProperty("result", step.getResult());
                                 this.destination.sendEventAsync(message);
                                 counter++;
                             } catch (JsonProcessingException e) {

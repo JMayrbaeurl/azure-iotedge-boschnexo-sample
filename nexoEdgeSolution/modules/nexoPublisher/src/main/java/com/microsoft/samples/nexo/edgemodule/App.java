@@ -124,6 +124,7 @@ public class App implements CommandLineRunner {
             //message.setProperty("nominal torque", Double.toString(process.getNominaltorque()));
             //message.setProperty("date", process.getDate());
             message.setProperty("id_code", process.getIdcode());
+            message.setProperty("job_nr", Integer.toString(process.getJobnr()));
         }
 
         return message;
