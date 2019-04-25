@@ -72,6 +72,29 @@ public class App implements CommandLineRunner {
         }
     }
 
+    @RequestMapping(value = "/forward", method = RequestMethod.POST, consumes = { "application/JSON" })
+    public void simplyForwardToHub(@RequestBody String pBody) {
+
+        Assert.notNull(this.destination, "Property destination must not be null. Check hub configuration");
+
+        if (pBody != null && pBody.length() > 0) {
+            logger.info("Forwarding to " + this.destination.destinationname());
+            logger.debug("Sending message: " + pBody);
+
+            Message message = new Message(pBody);
+            message.setProperty("source", "nexopublisher");
+            message.setProperty("messagetype", "any");
+            try {
+                this.destination.sendEventAsync(message);
+            } catch (IOException e) {
+                logger.warn("Exception sending message to " + this.destination.destinationname() + ". Message: "
+                        + e.getMessage());
+            }
+        } else {
+            logger.debug("Nothing to forward. Message is empty");
+        }
+    }
+
     @RequestMapping(value = "/stream", method = RequestMethod.POST, consumes = { "application/JSON" })
     public void streamIoTHub(@RequestBody String pBody) {
 

@@ -53,21 +53,14 @@ public class ProcessTranslator {
                             Date newDate = new Date();
                             newDate.setTime(
                                     startTime.getTime() + (long) (step.getGraph().getTimestamps().get(i) * 1000));
-                            TighteningStepGraphEntry anEntry = new TighteningStepGraphEntry(newDate,
-                                    step.getGraph().getAngles().get(i), step.getGraph().getTorques().get(i));
-                            anEntry.setIdcode(processInfo.getIdcode());
-                            anEntry.setCycle(processInfo.getCycle());
-                            anEntry.setSteprow(step.getRow());
-                            anEntry.setStepcol(step.getColumn());
-                            anEntry.setStepIndex(stepIndex);
-                            anEntry.setGraphIndex(i+1);
+                            TighteningStepGraphEntry anEntry = this.createEntry(processInfo, step, newDate, stepIndex, i);
+                            
                             try {
                                 String jsonString = objectMapper.writeValueAsString(anEntry);
-                                Message message = new Message(jsonString);
-                                message.setProperty("source", "nexopublisher");
-                                message.setProperty("messagetype", "events");
-                                message.setProperty("channel", Integer.toString(processInfo.getCycle()));
-                                message.setProperty("result", step.getResult());
+                                Message message = this.createMessage(jsonString, processInfo, step);
+
+                                logger.debug("Now streaming graph entry: " + jsonString);
+
                                 this.destination.sendEventAsync(message);
                                 counter++;
                             } catch (JsonProcessingException e) {
@@ -84,6 +77,31 @@ public class ProcessTranslator {
         } else {
             logger.debug("Message doesn't contain tightening steps");
         }
+    }
+
+    private TighteningStepGraphEntry createEntry(final TighteningProcess processInfo, final TighteningStep step, Date newDate, int stepIndex, int i) {
+
+        TighteningStepGraphEntry anEntry = new TighteningStepGraphEntry(newDate,
+                                    step.getGraph().getAngles().get(i), step.getGraph().getTorques().get(i));
+                            anEntry.setIdcode(processInfo.getIdcode());
+                            anEntry.setCycle(processInfo.getCycle());
+                            anEntry.setSteprow(step.getRow());
+                            anEntry.setStepcol(step.getColumn());
+                            anEntry.setStepIndex(stepIndex);
+                            anEntry.setGraphIndex(i+1);
+
+        return anEntry;
+    }
+
+    private Message createMessage(final String jsonString, final TighteningProcess processInfo, final TighteningStep step) {
+
+        Message message = new Message(jsonString);
+                                message.setProperty("source", "nexopublisher");
+                                message.setProperty("messagetype", "events");
+                                message.setProperty("channel", Integer.toString(processInfo.getCycle()));
+                                message.setProperty("result", step.getResult());
+
+        return message;
     }
 
     /**
