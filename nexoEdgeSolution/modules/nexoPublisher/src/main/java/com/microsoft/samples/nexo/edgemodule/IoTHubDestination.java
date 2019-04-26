@@ -5,14 +5,21 @@ import java.io.IOException;
 import com.microsoft.azure.sdk.iot.device.DeviceClient;
 import com.microsoft.azure.sdk.iot.device.Message;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 public final class IoTHubDestination extends AbstractPublishingDestination {
+
+    private static Logger logger = LoggerFactory.getLogger(IoTHubDestination.class);
 
     private DeviceClient deviceClient;
 
     @Override
     public void open() throws IOException {
+
+        logger.debug("Opening connection to IoT Hub");
+
         this.deviceClient.open();
     }
 

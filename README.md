@@ -44,7 +44,10 @@ The message format used for streaming graph entries looks like:
 2. IoT Hub connectivity: The Azure IoT Hub connection string and protocol can be configured with the Spring Boot properties `nexopublisher.connectionString` and `nexopublisher.protocol`, e.g. as environment variables. In the case of running Nexo Publisher as Azure IoT Edge module the IoT Hub connection string is retrieved from the environment and isn't needed.
 
 ### Running Nexo Publisher from the Command line
-TODO
+E.g. by using MQTT as transport protocol to the Azure IoT Hub:
+```
+java -D"nexopublisher.protocol"=MQTT -D"nexopublisher.connectionString"="[Insert your IoT Hub connection string for the device here]" -jar .\nexopublisher-1.0.0.jar
+```
 ### Running Nexo Publisher as Docker container
 TODO
 ### Running Nexo Publisher as Azure IoT Edge module
