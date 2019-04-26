@@ -7,7 +7,7 @@ RUN mvn install -Dmaven.test.skip=true
 
 FROM openjdk:8-jdk-alpine
 WORKDIR /app
-COPY --from=build-env /app/target/nexoPublisher-1.0.0-SNAPSHOT-with-deps.jar ./app.jar
+COPY --from=build-env /app/target/nexopublisher-1.0.0-SNAPSHOT.jar ./app.jar
 
 RUN addgroup -g 1000 -S moduleuser && \
     adduser -u 1000 -S moduleuser -G moduleuser

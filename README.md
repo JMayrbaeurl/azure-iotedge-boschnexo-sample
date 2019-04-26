@@ -49,7 +49,10 @@ E.g. by using MQTT as transport protocol to the Azure IoT Hub:
 java -D"nexopublisher.protocol"=MQTT -D"nexopublisher.connectionString"="[Insert your IoT Hub connection string for the device here]" -jar .\nexopublisher-1.0.0.jar
 ```
 ### Running Nexo Publisher as Docker container
-TODO
+E.g. by using MQTT as transport protocol to the Azure IoT Hub:
+```
+docker run -d -p 8080:8080 -e "nexopublisher.protocol=MQTT" -e "nexopublisher.connectionString=[Insert your IoT Hub connection string for the device here]" --name nexopublisher localhost:5000/nexopublisher:0.0.1-amd64
+```
 ### Running Nexo Publisher as Azure IoT Edge module
 TODO
 
