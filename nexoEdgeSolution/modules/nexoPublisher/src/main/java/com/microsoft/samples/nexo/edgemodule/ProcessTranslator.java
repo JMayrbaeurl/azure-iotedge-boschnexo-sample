@@ -27,7 +27,7 @@ public class ProcessTranslator {
         this.destination = dest;
     }
 
-    public void streamProcessInfoToDestination(final TighteningProcess processInfo) throws ParseException {
+    public void streamProcessInfoToDestination(final TighteningProcess processInfo, final MessageFactory messageFactory) throws ParseException {
 
         if (processInfo != null && processInfo.getTighteningsteps() != null
                 && processInfo.getTighteningsteps().size() > 0) {
@@ -57,7 +57,7 @@ public class ProcessTranslator {
                             
                             try {
                                 String jsonString = objectMapper.writeValueAsString(anEntry);
-                                Message message = this.createMessage(jsonString, processInfo, step);
+                                Message message = this.createMessage(jsonString, processInfo, step, messageFactory);
 
                                 logger.debug("Now streaming graph entry: " + jsonString);
 
@@ -93,13 +93,11 @@ public class ProcessTranslator {
         return anEntry;
     }
 
-    private Message createMessage(final String jsonString, final TighteningProcess processInfo, final TighteningStep step) {
+    private Message createMessage(final String jsonString, final TighteningProcess processInfo, final TighteningStep step, final MessageFactory messageFactory) {
 
-        Message message = new Message(jsonString);
-                                message.setProperty("source", "nexopublisher");
-                                message.setProperty("messagetype", "events");
-                                message.setProperty("channel", Integer.toString(processInfo.getCycle()));
-                                message.setProperty("result", step.getResult());
+        Message message = messageFactory.createMessageForGraphEntry(jsonString);                      
+        message.setProperty("channel", Integer.toString(processInfo.getCycle()));
+        message.setProperty("result", step.getResult());
 
         return message;
     }

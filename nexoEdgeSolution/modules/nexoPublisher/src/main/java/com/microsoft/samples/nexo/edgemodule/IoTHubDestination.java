@@ -15,6 +15,11 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
 
     private DeviceClient deviceClient;
 
+    public IoTHubDestination(MessageFactory msgFactory) {
+
+        super(msgFactory);
+    }
+
     @Override
     public void open() throws IOException {
 

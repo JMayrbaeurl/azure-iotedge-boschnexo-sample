@@ -6,6 +6,7 @@ import com.microsoft.azure.sdk.iot.device.ModuleClient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.AbstractFactoryBean;
 import org.springframework.stereotype.Component;
@@ -16,11 +17,14 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
 
     private static Logger logger = LoggerFactory.getLogger(PublishingDestinationFactory.class);
 
-    @Value("${nexopublisher.protocol}")
+    @Value("${nexopublisher.protocol:MQTT}")
     private String protocol;
 
     @Value("${nexopublisher.connectionString}")
     private String connectionString;
+
+    @Autowired
+    private MessageFactory messageFactory;
 
     @Override
     protected PublishingDestination createInstance() throws Exception {
@@ -41,7 +45,9 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
             client.registerConnectionStatusChangeCallback(
                 new AbstractPublishingDestination.ConnectionStatusChangeCallback(), null);
 
-            EdgeHubDestination edgeHubDestination = new EdgeHubDestination();
+            Assert.notNull(this.messageFactory, "Message factory not configured");
+
+            EdgeHubDestination edgeHubDestination = new EdgeHubDestination(this.messageFactory);
             edgeHubDestination.setModuleClient(client);
             result = edgeHubDestination;    
 
@@ -60,7 +66,9 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
             client.registerConnectionStatusChangeCallback(
                 new AbstractPublishingDestination.ConnectionStatusChangeCallback(), null);
 
-            IoTHubDestination ioTHubDestination = new IoTHubDestination();
+            Assert.notNull(this.messageFactory, "Message factory not configured");
+
+            IoTHubDestination ioTHubDestination = new IoTHubDestination(this.messageFactory);
             ioTHubDestination.setDeviceClient(client);
             result = ioTHubDestination;
         }
@@ -104,6 +112,20 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
      */
     public void setConnectionString(String connectionString) {
         this.connectionString = connectionString;
+    }
+
+    /**
+     * @return the messageFactory
+     */
+    public MessageFactory getMessageFactory() {
+        return messageFactory;
+    }
+
+    /**
+     * @param messageFactory the messageFactory to set
+     */
+    public void setMessageFactory(MessageFactory messageFactory) {
+        this.messageFactory = messageFactory;
     }
 
 }

@@ -14,6 +14,14 @@ public abstract class AbstractPublishingDestination implements PublishingDestina
 
     private static Logger logger = LoggerFactory.getLogger(AbstractPublishingDestination.class);
 
+    protected MessageFactory messageFactory;
+
+    protected AbstractPublishingDestination(MessageFactory msgFactory) {
+        super();
+
+        this.messageFactory = msgFactory;
+    }
+
     public static class ConnectionStatusChangeCallback implements IotHubConnectionStatusChangeCallback {
 
         @Override

@@ -10,6 +10,9 @@ import com.microsoft.azure.sdk.iot.device.Message;
  */
 public class NullPublishingDestination extends AbstractPublishingDestination {
 
+    public NullPublishingDestination() {
+        super(new MessageFactory());
+    }
     @Override
     public void open() throws IOException {
     }

@@ -29,6 +29,6 @@ public class ProcessTranslatorTest {
         TighteningProcess processInfo = objectMapper.readValue(resource, TighteningProcess.class);
         
         ProcessTranslator translator = new ProcessTranslator(new NullPublishingDestination());
-        translator.streamProcessInfoToDestination(processInfo);
+        translator.streamProcessInfoToDestination(processInfo, new MessageFactory());
     }
 }

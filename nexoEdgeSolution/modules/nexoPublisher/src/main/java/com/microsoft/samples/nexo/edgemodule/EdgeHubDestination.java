@@ -15,6 +15,11 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
 
     private ModuleClient moduleClient;
 
+    public EdgeHubDestination(MessageFactory msgFactory) {
+
+        super(msgFactory);
+    }
+
     @Override
     public void open() throws IOException {
 
@@ -42,7 +47,12 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
         
         Assert.notNull(this.moduleClient, "Property moduleClient must not be null");
 
-        this.moduleClient.sendEventAsync(message, null, message, "output1");
+        if (this.messageFactory.isMessageForProcessInfo(message))
+            this.moduleClient.sendEventAsync(message, null, message, "output1");
+        else if (this.messageFactory.isMessageForGraphEntry(message))
+            this.moduleClient.sendEventAsync(message, null, message, "output2");
+        else if (this.messageFactory.isMessageForAny(message))
+            this.moduleClient.sendEventAsync(message, null, message, "output3");
     }
 
     @Override
