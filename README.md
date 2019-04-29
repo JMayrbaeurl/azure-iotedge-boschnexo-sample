@@ -58,7 +58,9 @@ or by using the prebuild image from DockerHub
 docker run -d -p 8080:8080 -e "nexopublisher.protocol=MQTT" -e "nexopublisher.connectionString=[Insert your IoT Hub connection string for the device here]" --name nexopublisher nexopublisher
 ```
 ### Running Nexo Publisher as Azure IoT Edge module
-TODO
+
+Input and outputs used by the Nexo Publisher Edge module:
+![Nexo edge routing](assets/NexoEdgeRouting.png)
 
 ## Nexo File uploader
 TODO

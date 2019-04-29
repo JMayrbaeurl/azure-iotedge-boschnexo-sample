@@ -15,6 +15,12 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
 
     private ModuleClient moduleClient;
 
+    private String processInfoOutputName = "output1";
+
+    private String graphEntriesOutputName = "output2";
+
+    private String anyOutputName = "output3";
+
     public EdgeHubDestination(MessageFactory msgFactory) {
 
         super(msgFactory);
@@ -48,16 +54,58 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
         Assert.notNull(this.moduleClient, "Property moduleClient must not be null");
 
         if (this.messageFactory.isMessageForProcessInfo(message))
-            this.moduleClient.sendEventAsync(message, null, message, "output1");
+            this.moduleClient.sendEventAsync(message, null, message, this.processInfoOutputName);
         else if (this.messageFactory.isMessageForGraphEntry(message))
-            this.moduleClient.sendEventAsync(message, null, message, "output2");
+            this.moduleClient.sendEventAsync(message, null, message, this.graphEntriesOutputName);
         else if (this.messageFactory.isMessageForAny(message))
-            this.moduleClient.sendEventAsync(message, null, message, "output3");
+            this.moduleClient.sendEventAsync(message, null, message, this.anyOutputName);
     }
 
     @Override
     public String destinationname() {
         return "Edge Hub";
+    }
+
+    /**
+     * @return the processInfoOutputName
+     */
+    public String getProcessInfoOutputName() {
+        return processInfoOutputName;
+    }
+
+    /**
+     * @param processInfoOutputName the processInfoOutputName to set
+     */
+    public void setProcessInfoOutputName(String processInfoOutputName) {
+        this.processInfoOutputName = processInfoOutputName;
+    }
+
+    /**
+     * @return the graphEntriesOutputName
+     */
+    public String getGraphEntriesOutputName() {
+        return graphEntriesOutputName;
+    }
+
+    /**
+     * @param graphEntriesOutputName the graphEntriesOutputName to set
+     */
+    public void setGraphEntriesOutputName(String graphEntriesOutputName) {
+        this.graphEntriesOutputName = graphEntriesOutputName;
+    }
+
+    /**
+     * @return the anyOutputName
+     */
+    public String getAnyOutputName() {
+        return anyOutputName;
+    }
+
+    /**
+     * @param anyOutputName the anyOutputName to set
+     */
+    public void setAnyOutputName(String anyOutputName) {
+        this.anyOutputName = anyOutputName;
     }
     
 }
