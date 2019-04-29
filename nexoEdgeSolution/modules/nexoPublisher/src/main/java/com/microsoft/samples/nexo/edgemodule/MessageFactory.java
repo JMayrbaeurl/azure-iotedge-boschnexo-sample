@@ -8,12 +8,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.samples.nexo.process.TighteningProcess;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
 
 /**
  * MessageFactory
  */
 public class MessageFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(MessageFactory.class);
 
     public static final String STD_SOURCE_PROPNAME = "source";
     public static final String STD_SOURCE_PROPVALUE = "nexopublisher";
@@ -86,6 +90,48 @@ public class MessageFactory {
         TighteningProcess process = objectMapper.readValue(pBody, TighteningProcess.class);
         
         return process;
+    }
+
+    public TighteningProcess readTighteningProcessFromMessage(final Message message)
+            throws JsonParseException, JsonMappingException, IOException {
+
+        TighteningProcess result = null;
+
+        if (message != null) {
+
+            String jsonString = new String(message.getBytes(), Message.DEFAULT_IOTHUB_MESSAGE_CHARSET);
+            result = this.readTighteningProcessFromBody(jsonString);
+        }
+
+        return result;
+    }
+
+    public boolean messageContainsTighteningProcessInfo(final Message message) {
+
+        boolean result = false;
+
+        if (message != null) {
+            String jsonString = new String(message.getBytes(), Message.DEFAULT_IOTHUB_MESSAGE_CHARSET);
+            result = this.messageContainsTighteningProcessInfo(jsonString);
+        }
+
+        return result;
+    }
+
+    public boolean messageContainsTighteningProcessInfo(final String jsonString) {
+
+        boolean result = false;
+
+        if (jsonString != null && jsonString.length() > 0) {
+
+            try {
+                result = this.readTighteningProcessFromBody(jsonString) != null;
+            } catch (IOException e) {
+                logger.debug("Exception on parsing Tightenting process info. " + e.getMessage());
+            }
+        }
+
+        return result;
     }
 
     public boolean isMessageForProcessInfo(final Message message) {

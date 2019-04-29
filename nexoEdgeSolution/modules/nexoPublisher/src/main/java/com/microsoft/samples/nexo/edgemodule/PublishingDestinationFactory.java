@@ -26,6 +26,9 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
     @Autowired
     private MessageFactory messageFactory;
 
+    @Autowired
+    private InputMessageHandler inputMsgHandler;
+
     @Override
     protected PublishingDestination createInstance() throws Exception {
         
@@ -49,6 +52,8 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
 
             EdgeHubDestination edgeHubDestination = new EdgeHubDestination(this.messageFactory);
             edgeHubDestination.setModuleClient(client);
+            this.inputMsgHandler.registerWithModuleClient(client, edgeHubDestination);
+
             result = edgeHubDestination;    
 
         } else {
