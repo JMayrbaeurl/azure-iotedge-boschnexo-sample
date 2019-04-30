@@ -20,7 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
-public class FileUploader {
+public class FileUploader implements FileUploadMethods {
 
     private final static Logger logger = LoggerFactory.getLogger(FileUploader.class);
 
