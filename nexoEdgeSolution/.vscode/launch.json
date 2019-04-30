@@ -18,14 +18,12 @@
       "mainClass": "com.microsoft.samples.nexo.edgemodule.App",
       "projectName": "nexopublisher",
       "env": {
-        "nexopublisher.protocol": "MQTT",
-        "nexopublisher.connectionString": "HostName=jmiottesting.azure-devices.net;DeviceId=nexopublisher;SharedAccessKey=pNRgkHS8pUeCguGuM2WvJfbYN4Z1rNgYu7NJMa1QmkE=",
         "logging.level.com.microsoft.samples.nexo.edgemodule": "DEBUG"
       }
     },
     {
       "type": "java",
-      "name": "nexoPublisher Local Debug (java)",
+      "name": "nexoPublisher Edge Debug (java)",
       "request": "launch",
       "cwd": "${workspaceRoot}/modules/nexoPublisher",
       "console": "internalConsole",
