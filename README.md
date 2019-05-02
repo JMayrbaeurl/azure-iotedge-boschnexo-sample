@@ -44,14 +44,14 @@ The message format used for streaming graph entries looks like:
 ### Configuration
 
 1. Server port: Defaults to 8080 and can be configured with the `--server.port` command line argument. For more details see the [Spring Boot documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-properties-and-configuration.html#howto-use-short-command-line-arguments)
-2. IoT Hub connectivity: The Azure IoT Hub connection string and protocol can be configured with the Spring Boot properties `nexopublisher.connectionString` and `nexopublisher.protocol`, e.g. as environment variables. In the case of running Nexo Publisher as Azure IoT Edge module the IoT Hub connection string is retrieved from the environment and isn't needed.
+2. IoT Hub connectivity: The Azure IoT Hub connection string and protocol can be configured with the Spring Boot properties `nexopublisher_connectionString` and `nexopublisher_protocol`, e.g. as environment variables. In the case of running Nexo Publisher as Azure IoT Edge module the IoT Hub connection string is retrieved from the environment and isn't needed.
 
 ### Running Nexo Publisher from the Command line
 
 E.g. by using MQTT as transport protocol to the Azure IoT Hub:
 
 ```
-java -D"nexopublisher.protocol"=MQTT -D"nexopublisher.connectionString"="[Insert your IoT Hub connection string for the device here]" -jar .\nexopublisher-1.0.0.jar
+java -D"nexopublisher_protocol"=MQTT -D"nexopublisher_connectionString"="[Insert your IoT Hub connection string for the device here]" -jar .\nexopublisher-1.0.0.jar
 ```
 
 ### Running Nexo Publisher as Docker container
@@ -59,13 +59,13 @@ java -D"nexopublisher.protocol"=MQTT -D"nexopublisher.connectionString"="[Insert
 E.g. by using MQTT as transport protocol to the Azure IoT Hub:
 
 ```
-docker run -d -p 8080:8080 -e "nexopublisher.protocol=MQTT" -e "nexopublisher.connectionString=[Insert your IoT Hub connection string for the device here]" --name nexopublisher localhost:5000/nexopublisher:0.0.1-amd64
+docker run -d -p 8080:8080 -e "nexopublisher_protocol=MQTT" -e "nexopublisher_connectionString=[Insert your IoT Hub connection string for the device here]" --name nexopublisher localhost:5000/nexopublisher:0.0.1-amd64
 ```
 
 or by using the prebuild image from DockerHub
 
 ```
-docker run -d -p 8080:8080 -e "nexopublisher.protocol=MQTT" -e "nexopublisher.connectionString=[Insert your IoT Hub connection string for the device here]" --name nexopublisher nexopublisher
+docker run -d -p 8080:8080 -e "nexopublisher_protocol=MQTT" -e "nexopublisher_connectionString=[Insert your IoT Hub connection string for the device here]" --name nexopublisher nexopublisher
 ```
 
 ### Running Nexo Publisher as Azure IoT Edge module
@@ -79,7 +79,7 @@ TODO
 
 ## Development
 
-The complete project was developed with Visual Studio Code, leveraging the Azure IoT Edge support. Don't forget to set the System environment variable 'nexopublisher.connectionstring' to the Azure IoT Hub connection string of your device if you want to run and debug the nexopublisher from Visual Studio Code.
+The complete project was developed with Visual Studio Code, leveraging the Azure IoT Edge support. Don't forget to set the System environment variable 'nexopublisher_connectionString' to the Azure IoT Hub connection string of your device if you want to run and debug the nexopublisher from Visual Studio Code.
 
 
 ## Sample visualization of the tightening process curve in [Azure Time Series Insights](https://azure.microsoft.com/en-us/services/time-series-insights/)

@@ -1,0 +1,14 @@
+# Make sure you are using the right Azure subscription
+az account show
+
+# Create a dedicated resource group
+az group create --name nexoPublisher --location northeurope
+
+# Create an IoT Hub - Make sure you are using an unique name
+az iot hub create --resource-group nexoPublisher --name nexotestjm --location northeurope --sku S1
+
+# Register device for Nexo Publisher
+az iot hub device-identity create --device-id nexopublisher --hub-name nexotestjm --auth-method shared_private_key
+
+# Show connection string
+az iot hub device-identity show-connection-string --device-id nexopublisher --hub-name nexotestjm

@@ -1,0 +1,13 @@
+# Make sure you are using the right Azure subscription
+az account show
+
+# Create a dedicated resource group (if not already done)
+az group create --name nexoPublisher --location northeurope
+
+# Create ACI - Dont forget to enter your IoT Hub device connection string in the Env parameter (end of line)
+az container create --resource-group nexoPublisher --name nexopublisher --image jmayrbaeurl/nexopublisher --dns-name-label nexo-demo --ports 8080 --environment-variables "nexopublisher_connectionString=[Enter your device connection string]"
+
+# Pull container logs
+az container logs --resource-group nexoPublisher --name nexopublisher
+
+# Go to web browser and enter http://nexo-demo.northeurope.azurecontainer.io:8080 to see greeting message from service

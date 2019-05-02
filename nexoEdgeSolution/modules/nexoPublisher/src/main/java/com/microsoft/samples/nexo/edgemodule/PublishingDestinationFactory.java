@@ -17,10 +17,10 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
 
     private static Logger logger = LoggerFactory.getLogger(PublishingDestinationFactory.class);
 
-    @Value("${nexopublisher.protocol:MQTT}")
+    @Value("${nexopublisher_protocol:MQTT}")
     private String protocol;
 
-    @Value("${nexopublisher.connectionString}")
+    @Value("${nexopublisher_connectionString}")
     private String connectionString;
 
     @Autowired
