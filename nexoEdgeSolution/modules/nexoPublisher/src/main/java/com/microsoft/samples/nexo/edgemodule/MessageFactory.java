@@ -136,7 +136,7 @@ public class MessageFactory {
 
     public boolean isMessageForProcessInfo(final Message message) {
 
-        Assert.isNull(message, "Parameter message must not be null");
+        Assert.notNull(message, "Parameter message must not be null");
 
         boolean result = message.getProperty(this.sourcePropName) != null && 
             message.getProperty(this.sourcePropName).equals(this.sourcePropValue) && 
@@ -148,7 +148,7 @@ public class MessageFactory {
 
     public boolean isMessageForGraphEntry(final Message message) {
 
-        Assert.isNull(message, "Parameter message must not be null");
+        Assert.notNull(message, "Parameter message must not be null");
 
         boolean result = message.getProperty(this.sourcePropName) != null && 
             message.getProperty(this.sourcePropName).equals(this.sourcePropValue) && 
@@ -160,7 +160,7 @@ public class MessageFactory {
 
     public boolean isMessageForAny(final Message message) {
 
-        Assert.isNull(message, "Parameter message must not be null");
+        Assert.notNull(message, "Parameter message must not be null");
 
         boolean result = message.getProperty(this.sourcePropName) != null && 
             message.getProperty(this.sourcePropName).equals(this.sourcePropValue) && 

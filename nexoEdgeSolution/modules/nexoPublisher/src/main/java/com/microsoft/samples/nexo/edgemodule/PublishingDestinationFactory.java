@@ -20,7 +20,7 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
     @Value("${nexopublisher_protocol:MQTT}")
     private String protocol;
 
-    @Value("${nexopublisher_connectionString}")
+    @Value("${nexopublisher_connectionString:}")
     private String connectionString;
 
     @Autowired
@@ -34,14 +34,12 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
         
         PublishingDestination result = null;
 
-        if (System.getenv("EdgeHubConnectionString") != null) {
-            Assert.hasText(System.getenv("EdgeHubConnectionString"), "Env variable EdgeHubConnectionString must not be empty");
+        if (System.getenv("EdgeHubConnectionString") != null || System.getenv("IOTEDGE_WORKLOADURI") != null) {
             
             Assert.notNull(this.protocol, "Property protocol must not be null");
             Assert.hasText(this.protocol, "Property protocol must not be empty");
 
             logger.info("Now creating device client for Edge Hub communication");
-            logger.debug("Edge Hub connection string used: " + System.getenv("EdgeHubConnectionString"));
             logger.debug("Edge Hub connection protocol used: " + this.protocol);
 
             ModuleClient client = ModuleClient.createFromEnvironment(IotHubClientProtocol.valueOf(this.protocol));

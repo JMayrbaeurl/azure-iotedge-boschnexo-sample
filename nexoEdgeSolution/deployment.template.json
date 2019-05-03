@@ -51,16 +51,6 @@
           }
         },
         "modules": {
-          "tempSensor": {
-            "version": "1.0",
-            "type": "docker",
-            "status": "running",
-            "restartPolicy": "always",
-            "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-simulated-temperature-sensor:1.0",
-              "createOptions": {}
-            }
-          },
           "nexoPublisher": {
             "version": "1.0",
             "type": "docker",
@@ -68,7 +58,14 @@
             "restartPolicy": "always",
             "settings": {
               "image": "${MODULES.nexoPublisher}",
-              "createOptions": {}
+              "createOptions": {
+                "ExposedPorts" : {
+                  "8080/tcp": {}
+                }, 
+                "HostConfig" : {
+                  "PortBindings":{"8080/tcp":[{"HostPort":"8080"}]}
+                }
+              }
             }
           }
         }
@@ -78,8 +75,7 @@
       "properties.desired": {
         "schemaVersion": "1.0",
         "routes": {
-          "nexoPublisherToIoTHub": "FROM /messages/modules/nexoPublisher/outputs/* INTO $upstream",
-          "sensorTonexoPublisher": "FROM /messages/modules/tempSensor/outputs/temperatureOutput INTO BrokeredEndpoint(\"/modules/nexoPublisher/inputs/input1\")"
+          "nexoPublisherToIoTHub": "FROM /messages/modules/nexoPublisher/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200

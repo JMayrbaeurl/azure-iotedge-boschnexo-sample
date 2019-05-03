@@ -26,7 +26,7 @@ public class InputMessageHandler implements MessageCallback {
 
     private static final Logger logger = LoggerFactory.getLogger(InputMessageHandler.class);
 
-    @Value("${nexopublisher.inputname:input1}")
+    @Value("${nexopublisher_inputname:input1}")
     private String inputName;
 
     @Autowired

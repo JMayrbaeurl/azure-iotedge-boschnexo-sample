@@ -4,10 +4,12 @@ This sample shows how to integrate [Bosch Rexroth Nexo Tightening devices](https
 
 As already mentioned before Bosch's tightening devices can store their process information, containing timestamped angle and torque values, in json files, that contain the full information about the complete tightening process. Some samples are stored in [processSamples](processSamples) folder in this repo.
 
-1. **Option 1 - Process files w/o Edge computing:** Process files, stored locally on an edge device, get published directly to Azure IoT Hub by using the Nexo Publisher, optinally using the cli tool Nexo File Uploader.
+1. **Option 1 - Process files w/o Edge computing:** Process files, stored locally on an edge device, get published directly to Azure IoT Hub by using the Nexo Publisher, optionally using the cli tool Nexo File Uploader.
 2. **Option 2 -  Process files with Edge computing:** Process files, stored locally on an edge device, are ingested into the Azure IoT Edge data processing pipeline and can optionally be processed by other edge modules, e.g. Azure Machine Learning based modules with anomoly detection.
 
 ![Architecture](assets/nexoArchitecture.png)
+
+**Note**: It's not really necessary to store the process files on the edge device first, since the Nexo tightening devices are capable of sending the process info directly to the http endpoint of the Nexo Publisher.
 
 ## Nexo Publisher
 
@@ -45,6 +47,8 @@ The message format used for streaming graph entries looks like:
 
 1. Server port: Defaults to 8080 and can be configured with the `--server.port` command line argument. For more details see the [Spring Boot documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-properties-and-configuration.html#howto-use-short-command-line-arguments)
 2. IoT Hub connectivity: The Azure IoT Hub connection string and protocol can be configured with the Spring Boot properties `nexopublisher_connectionString` and `nexopublisher_protocol`, e.g. as environment variables. In the case of running Nexo Publisher as Azure IoT Edge module the IoT Hub connection string is retrieved from the environment and isn't needed.
+3. Nexo tightening device configuration: E.g. using HTTP to post all process info to Nexo Publisher running in the cloud ![NexoConfiguration](assets/NexoConfiguration.png)
+4. Alternatively use 'File Share' and the Nexo file uploader component
 
 ### Running Nexo Publisher from the Command line
 
@@ -65,7 +69,16 @@ docker run -d -p 8080:8080 -e "nexopublisher_protocol=MQTT" -e "nexopublisher_co
 or by using the prebuild image from DockerHub
 
 ```
-docker run -d -p 8080:8080 -e "nexopublisher_protocol=MQTT" -e "nexopublisher_connectionString=[Insert your IoT Hub connection string for the device here]" --name nexopublisher nexopublisher
+docker run -d -p 8080:8080 -e "nexopublisher_protocol=MQTT" -e "nexopublisher_connectionString=[Insert your IoT Hub connection string for the device here]" --name nexopublisher jmayrbaeurl/nexopublisher
+```
+
+### Running Nexo Publisher on Azure Container Instances
+
+[Azure Container Instances](https://azure.microsoft.com/en-us/services/container-instances/) easily allows you to run Docker containers on Azure in a managed environment. A full sample is provided in the Azure Command Line script  [DeployNexoPublisherToACI.azcli](nexoEdgeSolution/scripts/DeployNexoPublisherToACI.azcli)
+
+```azcli
+# Create ACI - Dont forget to enter your IoT Hub device connection string in the Env parameter (end of line)
+az container create --resource-group nexoPublisher --name nexopublisher --image jmayrbaeurl/nexopublisher --dns-name-label nexo-demo --ports 8080 --environment-variables "nexopublisher_connectionString=[Enter your device connection string]"
 ```
 
 ### Running Nexo Publisher as Azure IoT Edge module
