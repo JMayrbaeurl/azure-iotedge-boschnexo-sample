@@ -54,7 +54,7 @@ The message format used for streaming graph entries looks like:
 
 E.g. by using MQTT as transport protocol to the Azure IoT Hub:
 
-```
+```bsh
 java -D"nexopublisher_protocol"=MQTT -D"nexopublisher_connectionString"="[Insert your IoT Hub connection string for the device here]" -jar .\nexopublisher-1.0.0.jar
 ```
 
@@ -86,9 +86,142 @@ az container create --resource-group nexoPublisher --name nexopublisher --image 
 Input and outputs used by the Nexo Publisher Edge module:
 ![Nexo edge routing](assets/NexoEdgeRouting.png)
 
+A sample deployment manifest file for Azure IoT Edge can be found in the scripts folder with the name [SampleAzureIoTEdge_deployment.amd64.json](scripts/SampleAzureIoTEdge_deployment.amd64.json). When using the prebuild images from DockerHub, the modules section should contain an entry for the Nexo Publisher looking like:
+
+```json
+        "modules": {
+          "nexoPublisher": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "jmayrbaeurl/nexopublisher:latest",
+              "createOptions": "{\"ExposedPorts\":{\"8080/tcp\":{}},\"HostConfig\":{\"PortBindings\":{\"8080/tcp\":[{\"HostPort\":\"8080\"}]}}}"
+            }
+          }
+        }
+```
+
+and e.g. a standard routing for sending the messages upstream to IoT Hub:
+
+```json
+        "routes": {
+          "nexoPublisherToIoTHub": "FROM /messages/modules/nexoPublisher/outputs/* INTO $upstream"
+        },
+```
+
 ## Nexo File uploader
 
-TODO
+The Nexo File uploader App is simple tool based on [Spring Shell](https://docs.spring.io/spring-shell/docs/2.0.0.RELEASE/reference/htmlsingle/) that helps uploading Tightening process info files from the local file system to a running Nexo Publisher instance.
+
+Running it from the command line:
+
+```bsh
+java -jar .\nexofileuploader-1.0.0.jar
+```
+
+On starting the command line will show the prompt to accept new commands, e.g. help
+
+```bsh
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v2.1.4.RELEASE)
+
+2019-05-05 18:07:06.320  INFO 31964 --- [           main] c.m.s.n.uploader.nexofileuploader.App    : Starting App on VIE-jurgenma with PID 31964 
+2019-05-05 18:07:06.323  INFO 31964 --- [           main] c.m.s.n.uploader.nexofileuploader.App    : No active profile set, falling back to default profiles: default
+2019-05-05 18:07:08.681  INFO 31964 --- [           main] c.m.s.n.uploader.nexofileuploader.App    : Started App in 2.876 seconds (JVM running for 8.706)
+shell:>help
+AVAILABLE COMMANDS
+
+Built-In Commands
+        clear: Clear the shell screen.
+        exit, quit: Exit the shell.
+        help: Display help about available commands.
+        history: Display or save the history of previously run commands
+        script: Read and execute commands from a file.
+        stacktrace: Display the full stacktrace of the last error.
+
+Upload Commands
+        start-upload: Starts uploading files from folder
+        stop-upload: Stops uploading files from folder
+        upload: Uploads a file to IoT Hub using the Nexo Publisher
+        upload-all: Upload all files from a folder to IoT Hub using the Nexo Publisher
+```
+
+**Attention**: File and folder paths in commands have to be specified in Java notation. This means especially when used on Windows that folder seperators have to be quoted like ```C:\\Dev\\myfile.json```
+
+### Upload command
+
+```bsh
+NAME
+        upload - Uploads a file to IoT Hub using the Nexo Publisher
+
+SYNOPSYS
+        upload [--url] string  [--filepath] string
+
+OPTIONS
+        --url  string
+
+                [Mandatory]
+
+        --filepath  string
+
+                [Mandatory]
+```
+
+### Upload-all command
+
+```bsh
+NAME
+        upload-all - Upload all files from a folder to IoT Hub using the Nexo Publisher
+
+SYNOPSYS
+        upload-all [--url] string  [--folderpath] string
+
+OPTIONS
+        --url  string
+
+                [Mandatory]
+
+        --folderpath  string
+
+                [Mandatory]
+```
+
+### start-upload
+
+```bsh
+NAME
+        start-upload - Starts uploading files from folder
+
+SYNOPSYS
+        start-upload [--url] string  [--folder-path] string
+
+OPTIONS
+        --url  string
+
+                [Mandatory]
+
+        --folder-path  string
+
+                [Mandatory]
+```
+
+### stop-upload
+
+```bsh
+NAME
+        stop-upload - Stops uploading files from folder
+
+SYNOPSYS
+        stop-upload
+```
 
 ## Development
 
