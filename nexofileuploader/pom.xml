@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.microsoft.samples.nexo.uploader</groupId>
 	<artifactId>nexofileuploader</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<name>demo</name>
 	<description>Nexo file uploader tool</description>
 
