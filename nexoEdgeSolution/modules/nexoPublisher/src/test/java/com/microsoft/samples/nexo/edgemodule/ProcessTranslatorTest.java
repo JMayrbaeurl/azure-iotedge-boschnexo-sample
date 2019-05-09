@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.samples.nexo.process.TighteningProcess;
 
@@ -26,6 +27,7 @@ public class ProcessTranslatorTest {
         Assert.notNull(resource, "Could not load json file");
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
         TighteningProcess processInfo = objectMapper.readValue(resource, TighteningProcess.class);
         
         ProcessTranslator translator = new ProcessTranslator(new NullPublishingDestination());

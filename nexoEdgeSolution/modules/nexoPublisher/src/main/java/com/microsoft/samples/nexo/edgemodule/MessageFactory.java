@@ -3,6 +3,7 @@ package com.microsoft.samples.nexo.edgemodule;
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.azure.sdk.iot.device.Message;
@@ -87,6 +88,8 @@ public class MessageFactory {
             throws JsonParseException, JsonMappingException, IOException {
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        
         TighteningProcess process = objectMapper.readValue(pBody, TighteningProcess.class);
         
         return process;
