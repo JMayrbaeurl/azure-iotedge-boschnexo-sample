@@ -13,6 +13,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 @SpringBootApplication
 @EnableSwagger2
+@EnableScheduling
 @RestController
 public class App implements CommandLineRunner {
 
@@ -36,6 +38,8 @@ public class App implements CommandLineRunner {
     PublishingDestination destination;
 
     @Autowired MessageFactory messageFactory;
+
+    @Autowired PerformanceStatisticsMgr perfStatsMgr;
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
@@ -59,6 +63,8 @@ public class App implements CommandLineRunner {
         if (pBody != null && pBody.length() > 0) {
             logger.info("Publishing to " + this.destination.destinationname());
             logger.debug("Sending message: " + pBody);
+
+            this.perfStatsMgr.incrementNumberofRequest();
 
             TighteningProcess processInfo = this.readTighteningProcessFromBody(pBody);
             Message message = this.createMessage(processInfo, pBody);

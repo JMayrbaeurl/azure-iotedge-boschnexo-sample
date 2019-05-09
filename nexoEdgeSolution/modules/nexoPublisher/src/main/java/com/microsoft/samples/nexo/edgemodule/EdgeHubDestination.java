@@ -1,9 +1,11 @@
 package com.microsoft.samples.nexo.edgemodule;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.ModuleClient;
+import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +52,7 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
 
     @Override
     public void sendEventAsync(Message message) throws IOException {
-        
+
         Assert.notNull(this.moduleClient, "Property moduleClient must not be null");
 
         if (this.messageFactory.isMessageForProcessInfo(message))
@@ -106,6 +108,11 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
      */
     public void setAnyOutputName(String anyOutputName) {
         this.anyOutputName = anyOutputName;
+    }
+
+    @Override
+    public void reportProperties(List<Property> props) throws IllegalArgumentException, IOException {
+
     }
     
 }
