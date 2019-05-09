@@ -15,4 +15,6 @@ public interface PublishingDestination {
     public abstract void reportProperties(List<Property> props) throws IllegalArgumentException, IOException;
 
     public abstract String destinationname();
+
+    public abstract void registerMessageDeliveryNotification(MessageDeliveryNotification tobenotified);
 }

@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import com.microsoft.azure.sdk.iot.device.IotHubStatusCode;
+import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
 
 import org.slf4j.Logger;
@@ -17,7 +19,7 @@ import org.springframework.stereotype.Component;
  * PerformanceStatisticsMgr
  */
 @Component
-public class PerformanceStatisticsMgr {
+public class PerformanceStatisticsMgr implements MessageDeliveryNotification {
 
     private PerformanceStatistics stats = new PerformanceStatistics();
 
@@ -28,11 +30,14 @@ public class PerformanceStatisticsMgr {
     @Autowired
     private PublishingDestination destination;
 
+    @Autowired
+    private MessageFactory messageFactory;
+
     public void incrementNumberofRequest() {
 
         updateLock.lock();
 
-        stats.setNumberOfRequest(stats.getNumberOfRequest()+1);
+        stats.setNumberOfRequest(stats.getNumberOfRequest() + 1);
 
         updateLock.unlock();
     }
@@ -41,7 +46,7 @@ public class PerformanceStatisticsMgr {
 
         updateLock.lock();
 
-        stats.setNumberOfDeliveries(stats.getNumberOfDeliveries()+1);
+        stats.setNumberOfDeliveries(stats.getNumberOfDeliveries() + 1);
 
         updateLock.unlock();
     }
@@ -62,6 +67,20 @@ public class PerformanceStatisticsMgr {
             this.reportCurrentStats();
         } catch (IOException e) {
             logger.error("Exception on reporting current performance statistics. " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void messageWasSent(IotHubStatusCode status, Message message) {
+
+        if(status == IotHubStatusCode.OK || status == IotHubStatusCode.OK_EMPTY) {
+
+            if(message != null && this.messageFactory.isMessageForProcessInfo(message)) {
+
+                logger.debug("Process info message successfully sent to IoT Hub");
+
+                this.incrementNumberofDeliveries();
+            }
         }
     }
 

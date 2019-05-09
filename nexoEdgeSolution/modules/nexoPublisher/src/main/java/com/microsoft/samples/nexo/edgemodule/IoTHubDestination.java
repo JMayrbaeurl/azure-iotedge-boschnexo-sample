@@ -54,7 +54,7 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
 
         Assert.notNull(this.deviceClient, "Property deviceClient must not be null");
 
-        this.deviceClient.sendEventAsync(message, null, null);
+        this.deviceClient.sendEventAsync(message, this.createEventCallback(), message);
     }
 
     @Override

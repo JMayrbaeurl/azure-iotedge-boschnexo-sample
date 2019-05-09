@@ -16,10 +16,17 @@ public abstract class AbstractPublishingDestination implements PublishingDestina
 
     protected MessageFactory messageFactory;
 
+    protected MessageDeliveryNotification messageDeliveryNotification;
+
     protected AbstractPublishingDestination(MessageFactory msgFactory) {
         super();
 
         this.messageFactory = msgFactory;
+    }
+
+    public void registerMessageDeliveryNotification(MessageDeliveryNotification tobenotified) {
+
+        this.messageDeliveryNotification = tobenotified;
     }
 
     public static class ConnectionStatusChangeCallback implements IotHubConnectionStatusChangeCallback {
@@ -49,11 +56,33 @@ public abstract class AbstractPublishingDestination implements PublishingDestina
         }
     }
 
+    public EventCallback createEventCallback() {
+
+        if (this.messageDeliveryNotification != null)
+            return new EventCallback(this.messageDeliveryNotification);
+        else
+            return null;
+    }
+
+    public EventCallback createEventCallback(MessageDeliveryNotification tobeNotified) {
+
+        return new EventCallback(tobeNotified);
+    }
+
     public static class EventCallback implements IotHubEventCallback {
+
+        public EventCallback(MessageDeliveryNotification tobeNotified) {
+            this.messageDeliveryNotification = tobeNotified;
+        }
+
+        private final MessageDeliveryNotification messageDeliveryNotification;
+
         @Override
         public void execute(IotHubStatusCode status, Object context) {
             if (context instanceof Message) {
                 logger.debug("Send message with status: " + status.name());
+                if (this.messageDeliveryNotification != null)
+                    this.messageDeliveryNotification.messageWasSent(status, (Message)context);
             } else {
                 logger.debug("Invalid context passed");
             }
