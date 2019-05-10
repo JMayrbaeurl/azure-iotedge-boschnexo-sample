@@ -10,6 +10,18 @@ import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
  */
 public class PerformanceStatistics {
 
+    /**
+     *
+     */
+
+    public static final String NUMBER_OF_DELIVERIES = "numberOfDeliveries";
+
+    /**
+     *
+     */
+
+    public static final String NUMBER_OF_REQUEST = "numberOfRequest";
+
     private int numberOfRequest;
 
     private int numberOfDeliveries;
@@ -46,8 +58,8 @@ public class PerformanceStatistics {
 
         List<Property> result = new ArrayList<Property>();
 
-        result.add(new Property("numberOfRequest", this.numberOfRequest));
-        result.add(new Property("numberOfDeliveries", this.numberOfDeliveries));
+        result.add(new Property(NUMBER_OF_REQUEST, this.numberOfRequest));
+        result.add(new Property(NUMBER_OF_DELIVERIES, this.numberOfDeliveries));
 
         return result;
     }

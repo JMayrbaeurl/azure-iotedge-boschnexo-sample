@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.List;
 
 import com.microsoft.azure.sdk.iot.device.DeviceClient;
-import com.microsoft.azure.sdk.iot.device.IotHubEventCallback;
-import com.microsoft.azure.sdk.iot.device.IotHubStatusCode;
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
 
@@ -18,8 +16,6 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
     private static Logger logger = LoggerFactory.getLogger(IoTHubDestination.class);
 
     private DeviceClient deviceClient;
-
-    private NexoTighteningDevice dataCollector = new NexoTighteningDevice();
 
     public IoTHubDestination(MessageFactory msgFactory) {
 
@@ -60,15 +56,6 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
     @Override
     public String destinationname() {
         return "IoT Hub";
-    }
-
-    private static class DeviceTwinStatusCallBack implements IotHubEventCallback {
-
-        @Override
-        public void execute(IotHubStatusCode status, Object context) {
-            logger.debug("IoT Hub responded to device twin operation with status " + status.name());
-        }
-
     }
 
     @Override

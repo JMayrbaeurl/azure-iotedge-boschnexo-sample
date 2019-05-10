@@ -51,6 +51,7 @@ public class App implements CommandLineRunner {
         logger.info("Successfully started Nexo publisher app");
 
         this.destination.registerMessageDeliveryNotification(this.perfStatsMgr);
+        this.perfStatsMgr.initializeStatsWithDeviceTwinProps();
     }
 
     @RequestMapping("/")

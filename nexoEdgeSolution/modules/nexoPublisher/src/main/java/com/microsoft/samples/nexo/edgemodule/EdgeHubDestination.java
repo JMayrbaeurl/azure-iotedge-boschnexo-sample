@@ -34,6 +34,7 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
         logger.debug("Opening connection to Edge Hub");
 
         this.moduleClient.open();
+        this.moduleClient.startTwin(new DeviceTwinStatusCallBack(), this, this.dataCollector, this);
     }
 
     /**
@@ -56,11 +57,11 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
         Assert.notNull(this.moduleClient, "Property moduleClient must not be null");
 
         if (this.messageFactory.isMessageForProcessInfo(message))
-            this.moduleClient.sendEventAsync(message, null, message, this.processInfoOutputName);
+            this.moduleClient.sendEventAsync(message, this.createEventCallback(), message, this.processInfoOutputName);
         else if (this.messageFactory.isMessageForGraphEntry(message))
-            this.moduleClient.sendEventAsync(message, null, message, this.graphEntriesOutputName);
+            this.moduleClient.sendEventAsync(message, this.createEventCallback(), message, this.graphEntriesOutputName);
         else if (this.messageFactory.isMessageForAny(message))
-            this.moduleClient.sendEventAsync(message, null, message, this.anyOutputName);
+            this.moduleClient.sendEventAsync(message, this.createEventCallback(), message, this.anyOutputName);
     }
 
     @Override
@@ -113,6 +114,14 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
     @Override
     public void reportProperties(List<Property> props) throws IllegalArgumentException, IOException {
 
+        if (props != null && props.size() > 0) {
+
+            for (Property prop : props) {
+                this.dataCollector.setReportedProp(prop);
+            }
+            
+            this.moduleClient.sendReportedProperties(this.dataCollector.getReportedProp());
+        }
     }
     
 }
