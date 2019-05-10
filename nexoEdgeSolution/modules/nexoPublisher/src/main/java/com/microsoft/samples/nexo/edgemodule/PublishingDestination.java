@@ -20,4 +20,6 @@ public interface PublishingDestination {
     public abstract String destinationname();
 
     public abstract void registerMessageDeliveryNotification(MessageDeliveryNotification tobenotified);
+
+    public abstract void registerDirectMethodHandler(String methodName, DirectMethodHandler handler);
 }

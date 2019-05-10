@@ -52,6 +52,7 @@ public class App implements CommandLineRunner {
 
         this.destination.registerMessageDeliveryNotification(this.perfStatsMgr);
         this.perfStatsMgr.initializeStatsWithDeviceTwinProps();
+        this.destination.registerDirectMethodHandler("resetStats", this.perfStatsMgr.createResetStatsHandler());
     }
 
     @RequestMapping("/")

@@ -28,6 +28,7 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
         logger.debug("Opening connection to IoT Hub");
 
         this.deviceClient.open();
+        this.deviceClient.subscribeToDeviceMethod(new DirectMethodCallback(), this, new DirectMethodStatusCallback(), this);
         this.deviceClient.startDeviceTwin(new DeviceTwinStatusCallBack(), this, this.dataCollector, this);
     }
 

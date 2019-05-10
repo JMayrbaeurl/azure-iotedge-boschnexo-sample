@@ -118,6 +118,11 @@ public class PerformanceStatisticsMgr implements MessageDeliveryNotification {
         }
     }
 
+    public DirectMethodHandler createResetStatsHandler() {
+
+        return new ResetStatsHandler(this);
+    }
+
     /**
      * @return the stats
      */
