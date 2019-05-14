@@ -70,18 +70,29 @@ public class MessageFactory {
 
         if (message != null && process != null) {
             message.setProperty("nr", Integer.toString(process.getNr()));
-            message.setProperty("result", process.getResult());
-            // message.setProperty("channel", process.getChannel());
+            if (process.getResult() != null)
+                message.setProperty("result", this.createValidMessagePropertyValue(process.getResult()));
+            if (process.getChannel() != null)
+                message.setProperty("channel", this.createValidMessagePropertyValue(process.getChannel()));
             message.setProperty("prg_nr", Integer.toString(process.getPrgnr()));
-            //message.setProperty("prg_name", process.getPrgname());
+            if (process.getPrgname() != null)
+                message.setProperty("prg_name", this.createValidMessagePropertyValue(process.getPrgname()));
             // message.setProperty("prg_date", process.getPrgdate());
             message.setProperty("cycle", Integer.toString(process.getCycle()));
-            // message.setProperty("nominal torque",
-            // Double.toString(process.getNominaltorque()));
+            // message.setProperty("nominal torque", Double.toString(process.getNominaltorque()));
             // message.setProperty("date", process.getDate());
-            message.setProperty("id_code", process.getIdcode());
+            if (process.getIdcode() != null)
+                message.setProperty("id_code", this.createValidMessagePropertyValue(process.getIdcode()));
             message.setProperty("job_nr", Integer.toString(process.getJobnr()));
         }
+    }
+
+    public String createValidMessagePropertyValue(String fromString) {
+
+        Assert.notNull(fromString, "Parameter 'fromString' must not be null");
+
+        String result = fromString.replaceAll("[^a-zA-Z0-9!#$%*+-.^_`|~]","");
+        return result;
     }
 
     public TighteningProcess readTighteningProcessFromBody(String pBody)
