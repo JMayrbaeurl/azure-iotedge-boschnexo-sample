@@ -73,7 +73,7 @@ public class MessageFactory {
             message.setProperty("result", process.getResult());
             // message.setProperty("channel", process.getChannel());
             message.setProperty("prg_nr", Integer.toString(process.getPrgnr()));
-            message.setProperty("prg_name", process.getPrgname());
+            //message.setProperty("prg_name", process.getPrgname());
             // message.setProperty("prg_date", process.getPrgdate());
             message.setProperty("cycle", Integer.toString(process.getCycle()));
             // message.setProperty("nominal torque",
