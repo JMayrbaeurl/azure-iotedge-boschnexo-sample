@@ -1,9 +1,11 @@
 package com.microsoft.samples.nexo.edgemodule;
 
 import java.io.IOException;
+import java.util.List;
 
 import com.microsoft.azure.sdk.iot.device.DeviceClient;
 import com.microsoft.azure.sdk.iot.device.Message;
+import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +28,8 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
         logger.debug("Opening connection to IoT Hub");
 
         this.deviceClient.open();
+        this.deviceClient.subscribeToDeviceMethod(new DirectMethodCallback(), this, new DirectMethodStatusCallback(), this);
+        this.deviceClient.startDeviceTwin(new DeviceTwinStatusCallBack(), this, this.dataCollector, this);
     }
 
     /**
@@ -47,7 +51,7 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
 
         Assert.notNull(this.deviceClient, "Property deviceClient must not be null");
 
-        this.deviceClient.sendEventAsync(message, null, null);
+        this.deviceClient.sendEventAsync(message, this.createEventCallback(), message);
     }
 
     @Override
@@ -55,4 +59,16 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
         return "IoT Hub";
     }
 
+    @Override
+    public void reportProperties(List<Property> props) throws IllegalArgumentException, IOException {
+
+        if (props != null && props.size() > 0) {
+
+            for (Property prop : props) {
+                this.dataCollector.setReportedProp(prop);
+            }
+            
+            this.deviceClient.sendReportedProperties(this.dataCollector.getReportedProp());
+        }
+    }
 }
