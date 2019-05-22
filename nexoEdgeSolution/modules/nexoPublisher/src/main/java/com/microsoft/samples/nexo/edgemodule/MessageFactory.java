@@ -84,6 +84,12 @@ public class MessageFactory {
             if (process.getIdcode() != null)
                 message.setProperty("id_code", this.createValidMessagePropertyValue(process.getIdcode()));
             message.setProperty("job_nr", Integer.toString(process.getJobnr()));
+
+            // The Device ID of the Tightening device is coming from the field 'Tool serial'
+            if(process.getToolserial() != null) {
+                message.setProperty("tdeviceid", this.createValidMessagePropertyValue(process.getToolserial()));
+                message.setProperty("toolserial", this.createValidMessagePropertyValue(process.getToolserial()));
+            }
         }
     }
 
