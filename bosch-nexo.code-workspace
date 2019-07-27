@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "processSamples"
+		},
+		{
+			"path": "nexoopenprotocol"
 		}
 	],
 	"settings": {
