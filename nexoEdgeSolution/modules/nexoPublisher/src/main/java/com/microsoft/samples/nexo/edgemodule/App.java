@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import com.microsoft.azure.sdk.iot.device.Message;
+import com.microsoft.samples.nexo.openprotocol.NexoDevice;
+import com.microsoft.samples.nexo.openprotocol.NexoDeviceClientFactory;
 import com.microsoft.samples.nexo.process.TighteningProcess;
 
 import org.slf4j.Logger;
@@ -163,5 +165,11 @@ public class App implements CommandLineRunner {
     public MessageFactory messageFactory() {
 
         return new MessageFactory();
+    }
+
+    @Bean 
+    public NexoDevice nexoDevice() {
+        
+        return NexoDeviceClientFactory.createDefaultNexoDeviceClient("192.168.1.22", 4545);
     }
 }

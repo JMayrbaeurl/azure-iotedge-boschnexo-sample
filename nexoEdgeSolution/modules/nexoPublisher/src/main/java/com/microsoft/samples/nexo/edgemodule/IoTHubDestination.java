@@ -2,6 +2,8 @@ package com.microsoft.samples.nexo.edgemodule;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 import com.microsoft.azure.sdk.iot.device.DeviceClient;
 import com.microsoft.azure.sdk.iot.device.Message;
@@ -16,6 +18,8 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
     private static Logger logger = LoggerFactory.getLogger(IoTHubDestination.class);
 
     private DeviceClient deviceClient;
+
+    private Lock twinReportLock = new ReentrantLock();
 
     public IoTHubDestination(MessageFactory msgFactory) {
 
@@ -64,11 +68,17 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
 
         if (props != null && props.size() > 0) {
 
-            for (Property prop : props) {
-                this.dataCollector.setReportedProp(prop);
+            twinReportLock.lock();
+
+            try {
+                for (Property prop : props) {
+                    this.dataCollector.setReportedProp(prop);
+                }
+                
+                this.deviceClient.sendReportedProperties(this.dataCollector.getReportedProp());
+            } finally {
+                twinReportLock.unlock();
             }
-            
-            this.deviceClient.sendReportedProperties(this.dataCollector.getReportedProp());
         }
     }
 }
