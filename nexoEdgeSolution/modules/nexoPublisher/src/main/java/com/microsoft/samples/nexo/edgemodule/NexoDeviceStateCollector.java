@@ -11,6 +11,7 @@ import com.microsoft.samples.nexo.openprotocol.NexoDevice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -28,22 +29,27 @@ public class NexoDeviceStateCollector {
     @Autowired
     private NexoDevice nexoDeviceClient;
 
+    @Value("${nexopublisher_nexoupdates:true}")
+    private boolean doSendUpdates;
+
     @Scheduled(fixedRate = 30000, initialDelay = 7000)
     public void doCollectStateInformation() {
 
-        List<Property> props = new ArrayList<Property>();
+        if(this.doSendUpdates) {
+            List<Property> props = new ArrayList<Property>();
 
-        this.addBatteryLevel(props);
+            this.addBatteryLevel(props);
 
-        if (props != null && props.size() > 0) {
-            try {
-                this.destination.reportProperties(props);
-            } catch (IllegalArgumentException | IOException e) {
-                logger.error("Exception on Twin properties reporting", e);
-            }
-            
-            logger.debug("Reported current Nexo device state over Device Twin");
-        }   
+            if (props != null && props.size() > 0) {
+                try {
+                    this.destination.reportProperties(props);
+                } catch (IllegalArgumentException | IOException e) {
+                    logger.error("Exception on Twin properties reporting", e);
+                }
+                
+                logger.debug("Reported current Nexo device state over Device Twin");
+            } 
+        }  
     }
 
     private void addBatteryLevel(List<Property> props) {
@@ -73,5 +79,13 @@ public class NexoDeviceStateCollector {
 
     public void setNexoDeviceClient(NexoDevice nexoDeviceClient) {
         this.nexoDeviceClient = nexoDeviceClient;
+    }
+
+    public boolean isDoSendUpdates() {
+        return doSendUpdates;
+    }
+
+    public void setDoSendUpdates(boolean doSendUpdates) {
+        this.doSendUpdates = doSendUpdates;
     }
 }

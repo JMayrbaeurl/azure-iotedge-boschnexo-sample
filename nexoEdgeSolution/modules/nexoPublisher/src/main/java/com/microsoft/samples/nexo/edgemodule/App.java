@@ -11,6 +11,7 @@ import com.microsoft.samples.nexo.process.TighteningProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -170,6 +171,30 @@ public class App implements CommandLineRunner {
     @Bean 
     public NexoDevice nexoDevice() {
         
-        return NexoDeviceClientFactory.createDefaultNexoDeviceClient("192.168.1.22", 4545);
+        return NexoDeviceClientFactory.createDefaultNexoDeviceClient(this.nexoDeviceROPIPAddress, this.nexoDeviceROPPort);
     }
+
+    @Value("${nexopublisher_nexoip:192.168.1.22}")
+    private String nexoDeviceROPIPAddress;
+
+    @Value("${nexopublisher_nexoport:4545}")
+    private int nexoDeviceROPPort;
+
+    public String getNexoDeviceROPIPAddress() {
+        return nexoDeviceROPIPAddress;
+    }
+
+    public void setNexoDeviceROPIPAddress(String nexoDeviceROPIPAddress) {
+        this.nexoDeviceROPIPAddress = nexoDeviceROPIPAddress;
+    }
+
+    public int getNexoDeviceROPPort() {
+        return nexoDeviceROPPort;
+    }
+
+    public void setNexoDeviceROPPort(int nexoDeviceROPPort) {
+        this.nexoDeviceROPPort = nexoDeviceROPPort;
+    }
+
+    
 }
