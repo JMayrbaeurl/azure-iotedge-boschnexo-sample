@@ -18,7 +18,7 @@
       "mainClass": "com.microsoft.samples.nexo.edgemodule.App",
       "projectName": "nexopublisher",
       "env": {
-        "logging.level.com.microsoft.samples.nexo.edgemodule": "DEBUG"
+        "logging.level.com.microsoft.samples.nexo": "DEBUG"
       }
     },
     {

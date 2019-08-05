@@ -103,12 +103,29 @@ public class PerformanceStatisticsMgr implements MessageDeliveryNotification {
             for (Property prop : props) {
                 if(prop.getKey().equals(PerformanceStatistics.NUMBER_OF_REQUEST)) {
                     gotParameters = true;
-                    startValueNumberOfRequests = ((Double)prop.getValue()).intValue();
-                    this.stats.setNumberOfRequest(startValueNumberOfRequests);
+                    Object propValue = prop.getValue();
+                    if (propValue != null) {
+                        if (propValue instanceof Double)
+                            startValueNumberOfRequests = ((Double)propValue).intValue();
+                        else if (propValue instanceof Integer)
+                            startValueNumberOfRequests = ((Integer)propValue).intValue();
+                        else
+                            logger.error("Got unknown class for Device twin property: " + propValue);
+                        this.stats.setNumberOfRequest(startValueNumberOfRequests);
+                    }
                 } else if (prop.getKey().equals(PerformanceStatistics.NUMBER_OF_DELIVERIES)) {
                     gotParameters = true;
-                    startValueNumberOfDeliveries = ((Double)prop.getValue()).intValue();
-                    this.stats.setNumberOfDeliveries(startValueNumberOfDeliveries);
+                    Object propValue = prop.getValue();
+                    if (propValue != null) {
+                        if(propValue instanceof Double)
+                            startValueNumberOfDeliveries = ((Double)propValue).intValue();
+                        else if (propValue instanceof Integer)
+                            startValueNumberOfDeliveries = ((Integer)propValue).intValue();
+                        else 
+                            logger.error("Got unknown class for Device twin property: " + propValue);
+
+                        this.stats.setNumberOfDeliveries(startValueNumberOfDeliveries);
+                    }
                 }
             }
         }
