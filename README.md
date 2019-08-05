@@ -2,14 +2,23 @@
 
 This sample shows how to integrate [Bosch Rexroth Nexo Tightening devices](https://www.boschrexroth.com/en/us/products/product-groups/tightening-technology/topics/nexo-cordless-wi-fi-nutrunner/index) with Azure IoT services (mainly [Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/) and [Azure IoT Edge](https://azure.microsoft.com/en-us/services/iot-edge/)). Using the component Nexo Publisher process information from the tightening devices can be sent to the Cloud based Azure IoT Hub for further analysis or moved to local Edge processing on Azure IoT Edge.
 
+## Processing tightening results using Nexo's HTTP data service
+
+The Nexo device operating system offers several data services that are capable of sending tightening process results to different external service endpoints, like FTP and HTTP.
+
+1. **Option 1 - Process results w/o Edge computing:** Process tightening results sent directly from the Nexo device to the REST endpoint of the Nexo publisher component.
+2. **Option 2 -  Process results with Edge computing:** Process tightening results are ingested into the Azure IoT Edge data processing pipeline and can optionally be processed by other edge modules, e.g. Azure Machine Learning based modules with anomoly detection.
+
+![Architecture](assets/nexoBidirectArchitecture.png)
+
+## Processing tightening result files
+
 As already mentioned before Bosch's tightening devices can store their process information, containing timestamped angle and torque values, in json files, that contain the full information about the complete tightening process. Some samples are stored in [processSamples](processSamples) folder in this repo.
 
 1. **Option 1 - Process files w/o Edge computing:** Process files, stored locally on an edge device, get published directly to Azure IoT Hub by using the Nexo Publisher, optionally using the cli tool Nexo File Uploader.
 2. **Option 2 -  Process files with Edge computing:** Process files, stored locally on an edge device, are ingested into the Azure IoT Edge data processing pipeline and can optionally be processed by other edge modules, e.g. Azure Machine Learning based modules with anomoly detection.
 
 ![Architecture](assets/nexoArchitecture.png)
-
-**Note**: It's not really necessary to store the process files on the edge device first, since the Nexo tightening devices are capable of sending the process info directly to the http endpoint of the Nexo Publisher.
 
 ## Nexo Publisher
 
