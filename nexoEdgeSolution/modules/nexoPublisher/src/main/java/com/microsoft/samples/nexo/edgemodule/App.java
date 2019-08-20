@@ -37,12 +37,20 @@ public class App implements CommandLineRunner {
 
     private static Logger logger = LoggerFactory.getLogger(App.class);
 
+    @Value("${nexopublisher_nexoip:192.168.1.22}")
+    private String nexoDeviceROPIPAddress;
+
+    @Value("${nexopublisher_nexoport:4545}")
+    private int nexoDeviceROPPort;
+    
     @Autowired
     PublishingDestination destination;
 
     @Autowired MessageFactory messageFactory;
 
     @Autowired PerformanceStatisticsMgr perfStatsMgr;
+
+    @Autowired NexoDeviceController controller;
 
     public static void main(String[] args) {
         SpringApplication.run(App.class, args);
@@ -56,6 +64,7 @@ public class App implements CommandLineRunner {
         this.destination.registerMessageDeliveryNotification(this.perfStatsMgr);
         this.perfStatsMgr.initializeStatsWithDeviceTwinProps();
         this.destination.registerDirectMethodHandler("resetStats", this.perfStatsMgr.createResetStatsHandler());
+        this.destination.registerDirectMethodHandler("showOnDisplay", this.controller.createShowOnDisplayHandler());
     }
 
     @RequestMapping("/")
@@ -173,12 +182,6 @@ public class App implements CommandLineRunner {
         
         return NexoDeviceClientFactory.createDefaultNexoDeviceClient(this.nexoDeviceROPIPAddress, this.nexoDeviceROPPort);
     }
-
-    @Value("${nexopublisher_nexoip:192.168.1.22}")
-    private String nexoDeviceROPIPAddress;
-
-    @Value("${nexopublisher_nexoport:4545}")
-    private int nexoDeviceROPPort;
 
     public String getNexoDeviceROPIPAddress() {
         return nexoDeviceROPIPAddress;
