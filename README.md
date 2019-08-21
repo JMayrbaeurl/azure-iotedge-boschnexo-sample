@@ -52,12 +52,20 @@ The message format used for streaming graph entries looks like:
 }
 ```
 
-### Configuration
+### Configuration - Nexo device to Nexo Publisher
 
 1. Server port: Defaults to 8080 and can be configured with the `--server.port` command line argument. For more details see the [Spring Boot documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-properties-and-configuration.html#howto-use-short-command-line-arguments)
 2. IoT Hub connectivity: The Azure IoT Hub connection string and protocol can be configured with the Spring Boot properties `nexopublisher_connectionString` and `nexopublisher_protocol`, e.g. as environment variables. In the case of running Nexo Publisher as Azure IoT Edge module the IoT Hub connection string is retrieved from the environment and isn't needed.
 3. Nexo tightening device configuration: E.g. using HTTP to post all process info to Nexo Publisher running in the cloud ![NexoConfiguration](assets/NexoConfiguration.png)
 4. Alternatively use 'File Share' and the Nexo file uploader component
+
+### Configuration - Nexo Publisher to Nexo device
+
+To get other information from the Nexo device and to control the Nexo device, Nexo Publisher is connected to the Nexo device over TCP/IP using the Bosch Rexroth Open Protocol (for details see the Nexo device documentation).Two configuration parameters are used to establish the connection to the Nexo device. These parameters can be set by using the following environement variables:
+
+**nexopublisher_nexoip**: IP address or URL of the Nexo device
+
+**nexopublisher_nexoport**: Port the Nexo device is configured to use for the Bosch Rexroth Open Protocol
 
 ### Running Nexo Publisher from the Command line
 
@@ -119,6 +127,8 @@ and e.g. a standard routing for sending the messages upstream to IoT Hub:
           "nexoPublisherToIoTHub": "FROM /messages/modules/nexoPublisher/outputs/* INTO $upstream"
         },
 ```
+
+Detailled description of the used **Device model and Device management** approach can be found [here](./DeviceModel.md).
 
 ## Nexo File uploader
 
