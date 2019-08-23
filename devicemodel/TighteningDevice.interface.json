@@ -1,0 +1,38 @@
+{
+  "@id": "urn:BoschRexrothNexo:TighteningDevice:1",
+  "@type": "Interface",
+  "displayName": "Tightening device",
+  "contents": [
+    {
+      "@type": "Property",
+      "name": "batterylevel",
+      "comment": "Integer value in the range of 0 and 100 for current battery level of the Nexo device",
+      "displayName": "Battery Level",
+      "writable": false,
+      "schema": "integer"
+    },
+    {
+      "@type": "Telemetry",
+      "comment": "See Bosch docu.",
+      "name": "idcode",
+      "schema": "string"
+    },
+    {
+      "@type": "Command",
+      "description": "This command will show a message on the display of the Nexo device.",
+      "name": "showOnDisplay",
+      "commandType": "synchronous",
+      "request": [
+        {
+        "name": "message",
+        "schema": "string"
+        },
+        {
+          "name": "duration",
+          "schema": "integer"
+        }
+      ]
+    }
+  ],
+  "@context": "http://azureiot.com/v1/contexts/IoTModel.json"
+}

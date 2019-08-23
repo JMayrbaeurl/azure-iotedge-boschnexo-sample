@@ -1,0 +1,16 @@
+{
+  "@id": "urn:BoschRexroth:Nexo:1",
+  "@type": "CapabilityModel",
+  "displayName": "Bosch Rexroth Nexo capability model",
+  "implements": [
+    {
+      "schema": "urn:BoschRexrothNexo:TighteningDevice:1",
+      "name": "tighteningDevice"
+    },
+    {
+      "schema": "urn:azureiot:DeviceManagement:DeviceInformation:1",
+      "name": "deviceInfo"
+    }
+  ],
+  "@context": "http://azureiot.com/v1/contexts/IoTModel.json"
+}
