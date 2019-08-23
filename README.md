@@ -130,6 +130,10 @@ and e.g. a standard routing for sending the messages upstream to IoT Hub:
 
 Detailled description of the used **Device model and Device management** approach can be found [here](./DeviceModel.md).
 
+## Connecting multiple Nexo devices to Azure IoT Hub
+
+Each Nexo device uses its own dedicated Nexo Publisher instance to connect to Azure IoT Hub. Therefore you'll need a Nexo Publisher instance for each Nexo device. The best way to run multiple Nexo Publishers locally is by using Docker, an Azure IoT Edge runtime or a Kubernetes cluster. In any way each Nexo device will need a seperately configured instance of Nexo Publisher.
+
 ## Nexo File uploader
 
 The Nexo File uploader App is simple tool based on [Spring Shell](https://docs.spring.io/spring-shell/docs/2.0.0.RELEASE/reference/htmlsingle/) that helps uploading Tightening process info files from the local file system to a running Nexo Publisher instance.

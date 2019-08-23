@@ -11,6 +11,9 @@
 		},
 		{
 			"path": "nexoopenprotocol"
+		},
+		{
+			"path": "nexocli"
 		}
 	],
 	"settings": {
