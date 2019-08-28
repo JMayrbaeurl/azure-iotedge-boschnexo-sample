@@ -177,6 +177,11 @@ public class App implements CommandLineRunner {
         return new MessageFactory();
     }
 
+    @Bean
+    public ProvisioningHandler provisioningHandler() {
+        return new ProvisioningHandler();
+    }
+
     @Bean 
     public NexoDevice nexoDevice() {
         

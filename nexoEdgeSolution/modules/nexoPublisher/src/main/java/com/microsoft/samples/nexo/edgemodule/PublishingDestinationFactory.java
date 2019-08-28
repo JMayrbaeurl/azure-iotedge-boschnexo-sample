@@ -29,6 +29,11 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
     @Autowired
     private InputMessageHandler inputMsgHandler;
 
+    @Value("${nexopublisher_dps_enabled:false}")
+    private boolean useDeviceProvisioningService;
+
+    @Autowired ProvisioningHandler provisioningHandler;
+
     @Override
     protected PublishingDestination createInstance() throws Exception {
         
@@ -55,17 +60,36 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
             result = edgeHubDestination;    
 
         } else {
-            Assert.notNull(this.connectionString, "Property connectionString must not be null");
-            Assert.hasText(this.connectionString, "Property connectionString must not be empty");
 
-            Assert.notNull(this.protocol, "Property protocol must not be null");
-            Assert.hasText(this.protocol, "Property protocol must not be empty");
+            DeviceClient client = null;
 
-            logger.info("Now creating device client for IoT Hub communication");
-            logger.debug("IoT Hub connection string used: " + this.connectionString);
-            logger.debug("IoT Hub connection protocol used: " + this.protocol);
+            // Check the connection string. On null it has to be provisioned
+            if (this.useDeviceProvisioningService && (this.connectionString == null || this.connectionString.length() == 0) ) {
 
-            DeviceClient client = new DeviceClient(this.connectionString, IotHubClientProtocol.valueOf(this.protocol));
+                if (this.provisioningHandler != null) {
+
+                    client = this.provisioningHandler.isAlreadyProvisioned(this.protocol);
+                    if (client == null) {
+                        client = this.provisioningHandler.doProvisionDevice(this.protocol);
+                    }
+                } else {
+                    Assert.notNull(this.connectionString, "Property connectionString must not be null");
+                    Assert.hasText(this.connectionString, "Property connectionString must not be empty");
+                }
+            } else {
+                Assert.notNull(this.connectionString, "Property connectionString must not be null");
+                Assert.hasText(this.connectionString, "Property connectionString must not be empty");
+
+                Assert.notNull(this.protocol, "Property protocol must not be null");
+                Assert.hasText(this.protocol, "Property protocol must not be empty");
+
+                logger.info("Now creating device client for IoT Hub communication");
+                logger.debug("IoT Hub connection string used: " + this.connectionString);
+                logger.debug("IoT Hub connection protocol used: " + this.protocol);
+
+                client = new DeviceClient(this.connectionString, IotHubClientProtocol.valueOf(this.protocol));
+            }
+
             client.registerConnectionStatusChangeCallback(
                 new AbstractPublishingDestination.ConnectionStatusChangeCallback(), null);
 
@@ -129,6 +153,14 @@ public class PublishingDestinationFactory extends AbstractFactoryBean<Publishing
      */
     public void setMessageFactory(MessageFactory messageFactory) {
         this.messageFactory = messageFactory;
+    }
+
+    public boolean isUseDeviceProvisioningService() {
+        return useDeviceProvisioningService;
+    }
+
+    public void setUseDeviceProvisioningService(boolean useDeviceProvisioningService) {
+        this.useDeviceProvisioningService = useDeviceProvisioningService;
     }
 
 }
