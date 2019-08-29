@@ -2,6 +2,15 @@
 
 This sample shows how to integrate [Bosch Rexroth Nexo Tightening devices](https://www.boschrexroth.com/en/us/products/product-groups/tightening-technology/topics/nexo-cordless-wi-fi-nutrunner/index) with Azure IoT services (mainly [Azure IoT Hub](https://azure.microsoft.com/en-us/services/iot-hub/) and [Azure IoT Edge](https://azure.microsoft.com/en-us/services/iot-edge/)). Using the component Nexo Publisher process information from the tightening devices can be sent to the Cloud based Azure IoT Hub for further analysis or moved to local Edge processing on Azure IoT Edge.
 
+This sample shows the following Azure IoT features:
+
+- Connecting a legacy device to Azure IoT Hub without changing the firmware of the device
+- Connecting a device indirectly to Azure IoT Hub by using a software gateway that adds security and protocol translation
+- Using Azure Device Provisioning Service to provision a legacy device using Symmetric key attestation
+- Using Azure IoT Hub Device Twins to report health and performance information from the device
+- Using Azure IoT Hub Direct methods to control the device from the Cloud
+- Implementing a gateway software that can run as console application, as docker container or as an Azure IoT Edge module
+
 ## Processing tightening results using Nexo's HTTP data service
 
 The Nexo device operating system offers several data services that are capable of sending tightening process results to different external service endpoints, like FTP and HTTP.
