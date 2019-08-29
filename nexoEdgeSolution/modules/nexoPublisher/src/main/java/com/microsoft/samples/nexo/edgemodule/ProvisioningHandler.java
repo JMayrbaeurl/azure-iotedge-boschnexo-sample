@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.Assert;
 
 /**
  * ProvisioningHandler
@@ -31,7 +32,7 @@ public class ProvisioningHandler {
     private String dpsGlobalEndpoint;
 
     @Value("${nexopublisher_dps_key:}")
-    private String symetricKey;
+    private String symmetricKey;
 
     @Value("${nexopublisher_dps_regid:}")
     private String registrationID;
@@ -49,13 +50,17 @@ public class ProvisioningHandler {
         if (config != null && config.canBeUsedForIoTHubConnection()) {
 
             SecurityProviderSymmetricKey securityClientSymmetricKey = new SecurityProviderSymmetricKey(
-                    config.getSymetricKey().getBytes(), config.getRegistrationId());
+                    config.getSymmetricKey().getBytes(), config.getRegistrationId());
             try {
                 result = DeviceClient.createFromSecurityProvider(config.getIotHubUri(), config.getDeviceId(),
                         securityClientSymmetricKey, IotHubClientProtocol.valueOf(protocol));
             } catch (URISyntaxException e) {
                 logger.error("Invalid IoT Hub uri in configuration. " + e.getMessage());
-			}
+                throw new IllegalStateException("Invalid IoT Hub uri in configuration. " + e.getMessage());
+            }
+            
+            logger.debug("IoT Hub uri used: " + config.getIotHubUri() + " with device Id " + config.getDeviceId());
+            logger.debug("IoT Hub connection protocol used: " + protocol);
         }
 
         return result;
@@ -65,11 +70,15 @@ public class ProvisioningHandler {
 
         DeviceClient result = null;
 
+        Assert.notNull(protocol, "Parameter protocol must not be null");
+
         ProvisioningConfiguration config = this.configManager.readProvisioningConfiguration();
-        String aGlobalDPSEndpoint = this.dpsGlobalEndpoint != null ? this.dpsGlobalEndpoint : config.getDpsGlobalEndpoint();
-        String aScopeId = this.scopeID != null ? this.scopeID : config.getScopeId();
-        String aRegistrationId = this.registrationID != null ? this.registrationID : config.getRegistrationId();
-        String aSymmetricKey = this.symetricKey != null ? this.symetricKey : config.getSymetricKey();
+        Assert.notNull(config, "Could not read provisioning configuration from file");
+
+        String aGlobalDPSEndpoint = this.dpsGlobalEndpoint != null && this.dpsGlobalEndpoint.length() > 0 ? this.dpsGlobalEndpoint : config.getDpsGlobalEndpoint();
+        String aScopeId = this.scopeID != null && this.scopeID.length() > 0 ? this.scopeID : config.getScopeId();
+        String aRegistrationId = this.registrationID != null && this.registrationID.length() > 0 ? this.registrationID : config.getRegistrationId();
+        String aSymmetricKey = this.symmetricKey != null && this.symmetricKey.length() > 0 ? this.symmetricKey : config.getSymmetricKey();
 
         SecurityProviderSymmetricKey securityClientSymmetricKey = new SecurityProviderSymmetricKey(aSymmetricKey.getBytes(), aRegistrationId);
         ProvisioningDeviceClient provisioningDeviceClient = ProvisioningDeviceClient.create(aGlobalDPSEndpoint, aScopeId, 
@@ -105,8 +114,8 @@ public class ProvisioningHandler {
                 result = DeviceClient.createFromSecurityProvider(iotHubUri, deviceId, securityClientSymmetricKey, IotHubClientProtocol.valueOf(protocol));
 
                 ProvisioningConfiguration newConfig = new ProvisioningConfiguration(aRegistrationId, aSymmetricKey);
-                config.setScopeId(aScopeId); config.setDpsGlobalEndpoint(aGlobalDPSEndpoint);
-                config.setIotHubUri(iotHubUri); config.setDeviceId(deviceId);
+                newConfig.setScopeId(aScopeId); newConfig.setDpsGlobalEndpoint(aGlobalDPSEndpoint);
+                newConfig.setIotHubUri(iotHubUri); newConfig.setDeviceId(deviceId);
                 this.configManager.updateProvisioningConfiguration(newConfig);
             }
         } finally {
@@ -132,14 +141,6 @@ public class ProvisioningHandler {
 
     public void setDpsGlobalEndpoint(String dpsGlobalEndpoint) {
         this.dpsGlobalEndpoint = dpsGlobalEndpoint;
-    }
-
-    public String getSymetricKey() {
-        return symetricKey;
-    }
-
-    public void setSymetricKey(String symetricKey) {
-        this.symetricKey = symetricKey;
     }
 
     public String getRegistrationID() {
@@ -180,5 +181,13 @@ public class ProvisioningHandler {
 
     public void setMaxTimeToWaitforRegistration(int maxTimeToWaitforRegistration) {
         this.maxTimeToWaitforRegistration = maxTimeToWaitforRegistration;
+    }
+
+    public String getSymmetricKey() {
+        return symmetricKey;
+    }
+
+    public void setSymmetricKey(String symmetricKey) {
+        this.symmetricKey = symmetricKey;
     }
 }

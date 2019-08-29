@@ -1,5 +1,7 @@
 package com.microsoft.samples.nexo.edgemodule;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 /**
  * ProvisioningConfiguration
  */
@@ -11,15 +13,25 @@ public class ProvisioningConfiguration {
 
     private String registrationId;
 
-    private String symetricKey;
+    private String symmetricKey;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String iotHubUri;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String deviceId;
+
+    public ProvisioningConfiguration() {
+    }
+    
+    public ProvisioningConfiguration(String registrationId, String symetricKey) {
+        this.registrationId = registrationId;
+        this.symmetricKey = symetricKey;
+    }
 
     public boolean canBeUsedForIoTHubConnection() {
 
-        return this.iotHubUri != null && this.deviceId != null && this.registrationId != null && this.symetricKey != null;
+        return this.iotHubUri != null && this.deviceId != null && this.registrationId != null && this.symmetricKey != null;
     }
 
     public String getScopeId() {
@@ -46,14 +58,6 @@ public class ProvisioningConfiguration {
         this.registrationId = registrationId;
     }
 
-    public String getSymetricKey() {
-        return symetricKey;
-    }
-
-    public void setSymetricKey(String symetricKey) {
-        this.symetricKey = symetricKey;
-    }
-
     public String getIotHubUri() {
         return iotHubUri;
     }
@@ -74,12 +78,15 @@ public class ProvisioningConfiguration {
     public String toString() {
         return "ProvisioningConfiguration [deviceId=" + deviceId + ", dpsGlobalEndpoint=" + dpsGlobalEndpoint
                 + ", iotHubUri=" + iotHubUri + ", registrationId=" + registrationId + ", scopeId=" + scopeId
-                + ", symetricKey=" + symetricKey + "]";
+                + ", symetricKey=" + symmetricKey + "]";
     }
 
-    public ProvisioningConfiguration(String registrationId, String symetricKey) {
-        this.registrationId = registrationId;
-        this.symetricKey = symetricKey;
+    public String getSymmetricKey() {
+        return symmetricKey;
+    }
+
+    public void setSymmetricKey(String symmetricKey) {
+        this.symmetricKey = symmetricKey;
     }
 
 }

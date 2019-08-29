@@ -52,12 +52,36 @@ The message format used for streaming graph entries looks like:
 }
 ```
 
+### Configuration - Location of configuration files
+
+Nexo Publisher is a Spring Boot application and therefore can use all configuration possibilites that are available for this kind of applications. See the Spring Boot application for further information.
+
+Certain capabilities of the Nexo Publisher, e.g. the usage of the Azure Device Provisioning Service, need additional configurations, that are stored in json configuration files. The location of these configurations files defaults to the folder 'nexo' in the [user's home directory](https://docs.oracle.com/javase/tutorial/essential/environment/sysprop.html). But the location of the configuration directory can be changed by using the Spring Boot property `nexopublisher_config_dirpath`, e.g. as environment variables.
+
+### Configuration - Azure IoT Hub connectivity
+
+Configuring the connectivity to Azure IoT Hub is only necessary, if the Nexo Publisher is not run as an Azure IoT Edge module. In the case of running Nexo Publisher as Azure IoT Edge module the IoT Hub connection string is retrieved from the environment.
+
+There are two ways to configure the connection to IoT Hub. In both cases the transport protocol to be used to communicate with Azure IoT Hub has to be specified in the Spring Boot property `nexopublisher_protocol`, e.g. as environment variables. It defaults to MQTT.
+
+A) Using an [Azure IoT Hub connection string from the device registration](https://docs.microsoft.com/en-us/azure/iot-hub/iot-hub-devguide-identity-registry):The Azure IoT Hub connection string can be configured with the Spring Boot property `nexopublisher_connectionString`, e.g. as environment variables.
+
+B) Using the [Azure Device Provisioning Service](https://docs.microsoft.com/en-us/azure/iot-dps/): To be able to use the Azure Device Provisioning Service the Spring Boot property `nexopublisher_dps_enabled` has to be set to true, e.g. as environment variables. It defaults to false. Currently only the usage of [Symmetric keys](https://docs.microsoft.com/en-us/azure/iot-dps/concepts-symmetric-key-attestation) for Provisioning is supported. The following provisioning configuration file, a json file stored in the Nexo configuration directory and named 'nexoIoTHubConfiguration.json', is used. Other file names are supported by using the Spring Boot property `nexopublisher_config_provConfigFilename`. A sample of this configuration file is available in the [assets folder](./assets/nexoIoTHubConfiguration_sample.json).
+
+```json
+{
+  "scopeId" : "[Put in the Scope ID individual enrollment in Azure DPS]",
+  "dpsGlobalEndpoint" : "global.azure-devices-provisioning.net",
+  "registrationId" : "[Put in the Registration ID for the device from the individual enrollment in Azure DPS]",
+  "symmetricKey" : "[Put in the Symmetric key from the individual enrollment in Azure DPS]"
+}
+```
+
 ### Configuration - Nexo device to Nexo Publisher
 
 1. Server port: Defaults to 8080 and can be configured with the `--server.port` command line argument. For more details see the [Spring Boot documentation](https://docs.spring.io/spring-boot/docs/current/reference/html/howto-properties-and-configuration.html#howto-use-short-command-line-arguments)
-2. IoT Hub connectivity: The Azure IoT Hub connection string and protocol can be configured with the Spring Boot properties `nexopublisher_connectionString` and `nexopublisher_protocol`, e.g. as environment variables. In the case of running Nexo Publisher as Azure IoT Edge module the IoT Hub connection string is retrieved from the environment and isn't needed.
-3. Nexo tightening device configuration: E.g. using HTTP to post all process info to Nexo Publisher running in the cloud ![NexoConfiguration](assets/NexoConfiguration.png)
-4. Alternatively use 'File Share' and the Nexo file uploader component
+2. Nexo tightening device configuration: E.g. using HTTP to post all process info to Nexo Publisher running in the cloud ![NexoConfiguration](assets/NexoConfiguration.png)
+3. Alternatively use 'File Share' and the Nexo file uploader component
 
 ### Configuration - Nexo Publisher to Nexo device
 

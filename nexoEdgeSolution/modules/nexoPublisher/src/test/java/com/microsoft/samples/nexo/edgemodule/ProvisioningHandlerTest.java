@@ -19,7 +19,7 @@ public class ProvisioningHandlerTest {
         ProvisioningHandler handler = new ProvisioningHandler();
         handler.setDpsGlobalEndpoint("global.azure-devices-provisioning.net");
         handler.setScopeID("0ne00076410");
-        handler.setSymetricKey("xIxqaPSly0oSLR6NkPbj5XRseAbIqNvPB1CnZVKlKbfbHq77Xzp7EoUm3Lg+C8SFibj1rO4n8Ls+YBeRHYSu2w==");
+        handler.setSymmetricKey("xIxqaPSly0oSLR6NkPbj5XRseAbIqNvPB1CnZVKlKbfbHq77Xzp7EoUm3Lg+C8SFibj1rO4n8Ls+YBeRHYSu2w==");
         handler.setRegistrationID("nexo-dps-01");
         handler.setMaxTimeToWaitforRegistration(10000);
     
