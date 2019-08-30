@@ -57,7 +57,7 @@ public class NexoDeviceStateCollector {
         try {
             if (this.nexoDeviceClient.startCommunication()) {
                 int battLevel = this.nexoDeviceClient.getBatteryLevel();
-                props.add(new Property("batterylevel", new Integer(battLevel)));
+                props.add(new Property("batterylevel", Integer.valueOf(battLevel)));
                 this.nexoDeviceClient.stopCommunication();
             }
         } catch (NexoCommException ex) {
