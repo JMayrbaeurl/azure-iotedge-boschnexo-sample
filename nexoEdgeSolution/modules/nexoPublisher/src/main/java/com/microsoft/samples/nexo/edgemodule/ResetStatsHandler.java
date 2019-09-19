@@ -12,12 +12,12 @@ public class ResetStatsHandler implements DirectMethodHandler {
     }
 
     @Override
-    public boolean handleDirectMethodCall(Object methodData, Object context) {
+    public String handleDirectMethodCall(Object methodData, Object context) {
 
         this.performanceStatisticsMgr.getStats().setNumberOfRequest(0);
         this.performanceStatisticsMgr.getStats().setNumberOfDeliveries(0);
 
-        return true;
+        return DirectMethodHandler.STD_OK_Response;
     }
     
 }

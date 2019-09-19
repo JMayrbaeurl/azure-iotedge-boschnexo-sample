@@ -1,6 +1,7 @@
 package com.microsoft.samples.nexo.edgemodule;
 
 import com.microsoft.samples.nexo.openprotocol.NexoDevice;
+import com.microsoft.samples.nexo.openprotocol.OpenProtocolCommands;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,6 +19,16 @@ public class NexoDeviceController {
 
         return this.nexoDeviceClient.showOnDisplay(message, duration);
     } 
+
+    public String call(final String rawMessage) {
+
+        return ((OpenProtocolCommands)this.nexoDeviceClient).sendROPCommand(rawMessage);
+    }
+
+    public CallwithRawMessageHandler createCallwithRawMessageHandler() {
+
+        return new CallwithRawMessageHandler(this);
+    }
 
     public ShowOnDisplayHandler createShowOnDisplayHandler() {
 

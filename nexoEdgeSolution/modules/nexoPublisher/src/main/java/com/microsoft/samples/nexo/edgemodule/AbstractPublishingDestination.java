@@ -131,13 +131,14 @@ public abstract class AbstractPublishingDestination implements PublishingDestina
             if (dest.methodHandlers.containsKey(methodName))
             {
                 DirectMethodHandler handler = dest.methodHandlers.get(methodName);
+                String response = DirectMethodHandler.STD_ERROR_Response;
                 if (handler != null) {
-                    handler.handleDirectMethodCall(methodData, context);
-                    logger.debug("Direct method '" + methodName + "' successfully executed");
+                    response = handler.handleDirectMethodCall(methodData, context);
+                    logger.debug("Direct method '" + methodName + "' successfully executed. Returned: " + response);
                 }
 
                 int status = METHOD_SUCCESS;
-                deviceMethodData = new DeviceMethodData(status, "Called direct method " + methodName);
+                deviceMethodData = new DeviceMethodData(status, response);
             } else {
                 int status = METHOD_NOT_DEFINED;
                 deviceMethodData = new DeviceMethodData(status, "Not defined direct method " + methodName);

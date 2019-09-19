@@ -64,6 +64,8 @@ public class App implements CommandLineRunner {
         this.destination.registerMessageDeliveryNotification(this.perfStatsMgr);
         this.perfStatsMgr.initializeStatsWithDeviceTwinProps();
         this.destination.registerDirectMethodHandler("resetStats", this.perfStatsMgr.createResetStatsHandler());
+
+        this.destination.registerDirectMethodHandler("call", this.controller.createCallwithRawMessageHandler());
         this.destination.registerDirectMethodHandler("showOnDisplay", this.controller.createShowOnDisplayHandler());
     }
 

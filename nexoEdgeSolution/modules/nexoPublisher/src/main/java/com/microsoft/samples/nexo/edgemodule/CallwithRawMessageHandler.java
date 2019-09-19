@@ -10,43 +10,44 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * ShowOnDisplayHandler
+ * CallwithRawMessageHandler
  */
-public class ShowOnDisplayHandler implements DirectMethodHandler {
+public class CallwithRawMessageHandler implements DirectMethodHandler {
 
-    private static Logger logger = LoggerFactory.getLogger(ShowOnDisplayHandler.class);
+    private static Logger logger = LoggerFactory.getLogger(CallwithRawMessageHandler.class);
     
     private final NexoDeviceController nexoDeviceController;
-    
+
     @Override
     public String handleDirectMethodCall(Object methodData, Object context) {
-
+        
         String result = DirectMethodHandler.STD_OK_Response;
 
         /*
-         * { "message" : "Das ist ein Test", "duration" : 10 }
+         * { "message" : "Das ist ein Test" }
         */
 
         if (methodData != null) {
             ObjectMapper objectMapper = new ObjectMapper();
             try {
                 String msgString = new String((byte[])methodData, StandardCharsets.UTF_8);
-                ShowOnDisplayMessage msg = objectMapper.readValue(msgString, ShowOnDisplayMessage.class);
-                result = this.nexoDeviceController.showOnDisplay(msg.getMessage(), msg.getDuration()) 
-                    ? DirectMethodHandler.STD_OK_Response : DirectMethodHandler.STD_ERROR_Response;
+                RawMessage msg = objectMapper.readValue(msgString, RawMessage.class);
+                result = this.nexoDeviceController.call(msg.getMessage());
+
             } catch (IOException e) {
                 result = DirectMethodHandler.STD_ERROR_Response;
-                logger.error("Exception on reading 'Show on display' message from direct method call", e);
+                logger.error("Exception on reading raw message from direct method call", e);
 			} catch (NexoCommException e) {
                 result = DirectMethodHandler.STD_ERROR_Response;
-                logger.error("Exception calling Nexo device for 'Show display message' command. ", e);
+                logger.error("Exception calling Nexo device for raw command. ", e);
             }
         }
         
         return result;
     }
 
-    public ShowOnDisplayHandler(NexoDeviceController nexoDeviceController) {
+    public CallwithRawMessageHandler(NexoDeviceController nexoDeviceController) {
         this.nexoDeviceController = nexoDeviceController;
     }
+    
 }
