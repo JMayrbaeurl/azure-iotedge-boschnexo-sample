@@ -24,4 +24,4 @@ steps:
   inputs:
     SourceFolder: 'nexoopenprotocol/target'
     Contents: '*.jar'
-    TargetFolder: 'nexoopenprotocol'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/nexoopenprotocol'
