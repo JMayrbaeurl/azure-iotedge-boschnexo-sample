@@ -7,6 +7,7 @@ import java.util.List;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
 import com.microsoft.samples.nexo.openprotocol.NexoCommException;
 import com.microsoft.samples.nexo.openprotocol.NexoDevice;
+import com.microsoft.samples.nexo.openprotocol.TCPBasedNexoDevice;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,7 @@ public class NexoDeviceStateCollector {
             List<Property> props = new ArrayList<Property>();
 
             this.addBatteryLevel(props);
+            this.addIPAddressOfNexo(props);
 
             if (props != null && props.size() > 0) {
                 try {
@@ -62,6 +64,17 @@ public class NexoDeviceStateCollector {
             }
         } catch (NexoCommException ex) {
             logger.warn("Exception retrieving battery level from Nexo device.");
+        }
+    }
+
+    private void addIPAddressOfNexo(List<Property> props) {
+
+        if (this.nexoDeviceClient != null && this.nexoDeviceClient instanceof TCPBasedNexoDevice) {
+            TCPBasedNexoDevice device = (TCPBasedNexoDevice)this.nexoDeviceClient;
+            String ipAddress = device.listeningIPAddress();
+            if (ipAddress != null && ipAddress.length() > 0) {
+                props.add(new Property("ipaddress", ipAddress));
+            }
         }
     }
 
