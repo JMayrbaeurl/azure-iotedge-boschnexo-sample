@@ -35,13 +35,22 @@ public class App {
 		SpringApplication.run(App.class, args);
 	}
 
-	@RequestMapping(value = "/rop/{id}/call", method = RequestMethod.POST, consumes = { "text/plain" })
+	@RequestMapping(value = "/devices/{id}/rop", method = RequestMethod.POST, consumes = { "text/plain" })
 	@ResponseBody
 	public String callNexo(@PathVariable String id, @RequestBody String pBody) {
 
 		logger.info("Raw message call to device '" + id + "' and message '" + pBody + "'");
 
 		return this.serviceClient.callNexo(id, pBody);
+	}
+
+	@RequestMapping(value = "/devices", method = RequestMethod.GET)
+	@ResponseBody
+	public String getNexoDevices() {
+
+		logger.info("Get all Nexo devices from registry");
+
+		return this.serviceClient.getNexoDevices();
 	}
 
 	@Bean
