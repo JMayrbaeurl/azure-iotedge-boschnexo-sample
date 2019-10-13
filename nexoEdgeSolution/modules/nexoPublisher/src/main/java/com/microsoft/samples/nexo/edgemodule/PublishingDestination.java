@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
+import com.microsoft.samples.nexo.process.TighteningProcess;
 
 public interface PublishingDestination {
 
@@ -22,4 +23,6 @@ public interface PublishingDestination {
     public abstract void registerMessageDeliveryNotification(MessageDeliveryNotification tobenotified);
 
     public abstract void registerDirectMethodHandler(String methodName, DirectMethodHandler handler);
+
+    public abstract void uploadFile(TighteningProcess processInfo, String jsonString) throws IOException;
 }

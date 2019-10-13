@@ -117,6 +117,15 @@ public abstract class AbstractPublishingDestination implements PublishingDestina
         }
     }
 
+    protected static class FileUploadStatusCallback implements IotHubEventCallback {
+
+        @Override
+        public void execute(IotHubStatusCode responseStatus, Object callbackContext) {
+            logger.debug("IoT Hub responded to file upload operation with status " + responseStatus.name());
+        }
+
+    }
+
     private static final int METHOD_SUCCESS = 200;
     private static final int METHOD_NOT_DEFINED = 404;
 

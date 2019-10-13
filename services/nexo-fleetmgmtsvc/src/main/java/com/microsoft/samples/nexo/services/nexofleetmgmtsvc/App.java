@@ -53,6 +53,19 @@ public class App {
 		return this.serviceClient.getNexoDevices();
 	}
 
+	@RequestMapping(value = "/devices/{id}/lock", method = RequestMethod.POST)
+	public void lockDevice(@PathVariable String id)
+	{
+
+	}
+
+	
+	@RequestMapping(value = "/devices/{id}/unlock", method = RequestMethod.POST)
+	public void unlockDevice(@PathVariable String id)
+	{
+
+	}
+
 	@Bean
 	public NexoServiceClient createServiceClient() throws IOException {
 

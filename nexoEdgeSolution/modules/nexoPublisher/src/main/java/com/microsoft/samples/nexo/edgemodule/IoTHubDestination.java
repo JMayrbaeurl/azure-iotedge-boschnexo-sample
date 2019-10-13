@@ -1,6 +1,9 @@
 package com.microsoft.samples.nexo.edgemodule;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -8,6 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.microsoft.azure.sdk.iot.device.DeviceClient;
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
+import com.microsoft.samples.nexo.process.TighteningProcess;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +36,8 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
         logger.debug("Opening connection to IoT Hub");
 
         this.deviceClient.open();
-        this.deviceClient.subscribeToDeviceMethod(new DirectMethodCallback(), this, new DirectMethodStatusCallback(), this);
+        this.deviceClient.subscribeToDeviceMethod(new DirectMethodCallback(), this, new DirectMethodStatusCallback(),
+                this);
         this.deviceClient.startDeviceTwin(new DeviceTwinStatusCallBack(), this, this.dataCollector, this);
     }
 
@@ -74,11 +79,22 @@ public final class IoTHubDestination extends AbstractPublishingDestination {
                 for (Property prop : props) {
                     this.dataCollector.setReportedProp(prop);
                 }
-                
+
                 this.deviceClient.sendReportedProperties(this.dataCollector.getReportedProp());
             } finally {
                 twinReportLock.unlock();
             }
         }
+    }
+
+    @Override
+    public void uploadFile(TighteningProcess processInfo, String jsonString)
+            throws IOException {
+        
+        byte[] raw = jsonString.getBytes(StandardCharsets.UTF_8);
+        InputStream inputStream = new ByteArrayInputStream(raw);
+
+        this.deviceClient.uploadToBlobAsync("Cycle_" + processInfo.getCycle() + ".json", 
+             inputStream, raw.length, new FileUploadStatusCallback(), processInfo);
     }
 }

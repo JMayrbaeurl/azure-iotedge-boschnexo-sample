@@ -42,6 +42,9 @@ public class App implements CommandLineRunner {
 
     @Value("${nexopublisher_nexoport:4545}")
     private int nexoDeviceROPPort;
+
+    @Value("${nexopublisher_fileupload:false}")
+    private boolean alwaysUploadToArchive;
     
     @Autowired
     PublishingDestination destination;
@@ -89,6 +92,11 @@ public class App implements CommandLineRunner {
             Message message = this.createMessage(processInfo, pBody);
             try {
                 this.destination.sendEventAsync(message);
+
+                if (this.alwaysUploadToArchive) {
+                    logger.info("File upload to " + this.destination.destinationname());
+                    this.destination.uploadFile(processInfo, pBody);
+                }
             } catch (IOException e) {
                 logger.warn("Exception sending message to " + this.destination.destinationname() + ". Message: "
                         + e.getMessage());
@@ -132,9 +140,40 @@ public class App implements CommandLineRunner {
             ProcessTranslator translator = new ProcessTranslator(this.destination);
             try {
                 translator.streamProcessInfoToDestination(processInfo, this.messageFactory);
+
+                if (this.alwaysUploadToArchive) {
+                    logger.info("File upload to " + this.destination.destinationname());
+                    try {
+                        this.destination.uploadFile(processInfo, pBody);
+                    } catch (IOException e) {
+                        logger.warn("Exception sending message to " + this.destination.destinationname() + ". Message: "
+                                + e.getMessage());
+                    }
+                }
             } catch (ParseException e) {
                 logger.error("Exception streaming graph entries of message to " + this.destination.destinationname()
                         + ". Message: " + e.getMessage());
+            }
+        } else {
+            logger.debug("Nothing to stream. Message is empty");
+        }
+    }
+
+    @RequestMapping(value = "/fileupload", method = RequestMethod.POST, consumes = { "application/JSON" })
+    public void fileUploadIoTHub(@RequestBody String pBody) {
+
+        Assert.notNull(this.destination, "Property destination must not be null. Check hub configuration");
+
+        if (pBody != null && pBody.length() > 0) {
+            logger.info("File upload to " + this.destination.destinationname());
+            logger.debug("Sending message contents of: " + pBody);
+
+            TighteningProcess processInfo = this.readTighteningProcessFromBody(pBody);
+            try {
+                this.destination.uploadFile(processInfo, pBody);
+            } catch (IOException e) {
+                logger.error("Exception uploading file to " + this.destination.destinationname()
+                    + ". Message: " + e.getMessage());
             }
         } else {
             logger.debug("Nothing to stream. Message is empty");
@@ -206,5 +245,11 @@ public class App implements CommandLineRunner {
         this.nexoDeviceROPPort = nexoDeviceROPPort;
     }
 
-    
+    public boolean isAlwaysUploadToArchive() {
+        return alwaysUploadToArchive;
+    }
+
+    public void setAlwaysUploadToArchive(boolean alwaysUploadToArchive) {
+        this.alwaysUploadToArchive = alwaysUploadToArchive;
+    }
 }

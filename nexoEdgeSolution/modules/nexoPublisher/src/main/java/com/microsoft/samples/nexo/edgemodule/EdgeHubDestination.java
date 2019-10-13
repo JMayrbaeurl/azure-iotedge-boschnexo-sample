@@ -6,6 +6,7 @@ import java.util.List;
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.ModuleClient;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
+import com.microsoft.samples.nexo.process.TighteningProcess;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -119,9 +120,15 @@ public final class EdgeHubDestination extends AbstractPublishingDestination {
             for (Property prop : props) {
                 this.dataCollector.setReportedProp(prop);
             }
-            
+
             this.moduleClient.sendReportedProperties(this.dataCollector.getReportedProp());
         }
+    }
+
+    @Override
+    public void uploadFile(TighteningProcess processInfo, String jsonString) {
+        
+        throw new UnsupportedOperationException("Not implemented yet");
     }
     
 }

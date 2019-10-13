@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
+import com.microsoft.samples.nexo.process.TighteningProcess;
 
 /**
  * NullPublishingDestination
@@ -31,6 +32,11 @@ public class NullPublishingDestination extends AbstractPublishingDestination {
 
     @Override
     public void reportProperties(List<Property> props) throws IllegalArgumentException, IOException {
+
+    }
+
+    @Override
+    public void uploadFile(TighteningProcess processInfo, String jsonString) {
 
     }
 }

@@ -36,6 +36,7 @@ The Nexo Publisher is the central component to ingest process data from the tigh
 1. Publishing a process file: ***http://localhost:8080/publish***: Assumes that the process file is sent in the request body as json string and sends it as one message to Azure IoT Hub or Azure IoT Edge (output1)
 2. Streaming graph entries of a process file: ***http://localhost:8080/stream***: As with the publish function the process file should be sent in the request body as json string. All graph entries of all tightening steps are streamed as single messages to IoT Hub or Azure IoT Edge. The used payload message format is documented below.
 3. (Experimental) Simple forwarding of any json data: ***http://localhost:8080/forward***: The json string in the request body is simply forwarded to Azure IoT Hub or Azure IoT Edge.
+4. Archiving a process file in Azure Blob storage: ***http://localhost:8080/fileupload***: The json string in the request body is stored as blob in Azure Blob storage (Must be configured on used IoT Hub). By setting the property `nexopublisher_fileupload`, that defaults to false, to true, any publish or stream call will additionally archive the process file in Azure Blob storage.
 
 ### Azure IoT Hub message formats
 
