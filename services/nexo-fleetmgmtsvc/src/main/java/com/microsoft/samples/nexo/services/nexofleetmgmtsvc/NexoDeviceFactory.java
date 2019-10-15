@@ -38,6 +38,8 @@ public class NexoDeviceFactory {
                 Pair prop = iter.next();
                 if ("batterylevel".equals(prop.getKey())) {
                     result.setBatterylevel(Integer.valueOf(((Double)prop.getValue()).intValue()));
+                } else if ("ipaddress".equals(prop.getKey())) {
+                    result.setIpAddress(prop.getValue().toString());
                 }
             }
         }

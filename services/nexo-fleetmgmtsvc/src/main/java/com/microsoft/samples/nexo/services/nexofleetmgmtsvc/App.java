@@ -28,6 +28,12 @@ public class App {
 	@Value("${nexoservice_connectionString:}")
 	private String connectionString;
 
+	@Value("${nexoservice_archiveConString:}")
+	private String archiveConnectionString;
+
+	@Value("${nexoservice_archiveContainername:archive}")
+	private String archiveContainername;
+
 	@Autowired
 	private NexoServiceClient serviceClient;
 
@@ -66,10 +72,19 @@ public class App {
 
 	}
 
+	@RequestMapping(value = "/devices/{id}/latest", method = RequestMethod.GET) 
+	public String getLastestTighteningProcessInfo(@PathVariable String id) {
+
+		logger.info("Get latest tightening process info file for '" + id);
+
+		return this.serviceClient.readLatestTighteningProcessInfo(id);
+	}
+
 	@Bean
 	public NexoServiceClient createServiceClient() throws IOException {
 
-		NexoServiceClient result = new NexoServiceClient(this.protocol, this.connectionString);
+		NexoServiceClient result = new NexoServiceClient(this.protocol, this.connectionString, 
+			this.archiveConnectionString, this.archiveContainername);
 		result.openConnection();
 
 		return result;

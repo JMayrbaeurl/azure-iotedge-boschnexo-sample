@@ -1,7 +1,10 @@
 package com.microsoft.samples.nexo.services.nexofleetmgmtsvc;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.InvalidKeyException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,9 +17,16 @@ import com.microsoft.azure.sdk.iot.service.devicetwin.DeviceTwinDevice;
 import com.microsoft.azure.sdk.iot.service.devicetwin.MethodResult;
 import com.microsoft.azure.sdk.iot.service.devicetwin.Query;
 import com.microsoft.azure.sdk.iot.service.exceptions.IotHubException;
+import com.microsoft.azure.storage.CloudStorageAccount;
+import com.microsoft.azure.storage.StorageException;
+import com.microsoft.azure.storage.blob.CloudBlobClient;
+import com.microsoft.azure.storage.blob.CloudBlobContainer;
+import com.microsoft.azure.storage.blob.CloudBlockBlob;
+import com.microsoft.azure.storage.blob.ListBlobItem;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.Assert;
 
 /**
  * NexoServiceClient
@@ -34,10 +44,18 @@ public class NexoServiceClient {
 
     private String connectionString;
 
+    private String archiveConnectionString;
+
+    private String archiveContainername;
+
     private ServiceClient serviceClient;
 
     private String queryString_ForNexoDevices = STD_QUERY_FORNEXODEVICES;
 
+    /**
+     * 
+     * @throws IOException
+     */
     public void openConnection() throws IOException {
 
         this.serviceClient = ServiceClient.createFromConnectionString(this.connectionString,
@@ -45,6 +63,12 @@ public class NexoServiceClient {
         this.serviceClient.open();
     }
 
+    /**
+     * 
+     * @param deviceId
+     * @param message
+     * @return
+     */
     public String callNexo(final String deviceId, final String message) {
 
         String response = "";
@@ -58,15 +82,18 @@ public class NexoServiceClient {
                     mapper.writeValueAsString(msg));
             response = result.getPayload().toString();
         } catch (IOException ex) {
-
+            logger.error("Exception on calling nexo device with id '" + deviceId + "' and message '" + message + "': " + ex.getMessage());
         } catch (IotHubException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Exception on calling nexo device with id '" + deviceId + "' and message '" + message + "': " + e.getMessage());
         }
 
         return response;
     }
 
+    /**
+     * 
+     * @return
+     */
     public String getNexoDevices() {
 
         List<NexoDevice> devices = new ArrayList<NexoDevice>();
@@ -81,11 +108,10 @@ public class NexoServiceClient {
                 devices.add(factory.createFromDeviceTwin(nexoDevice));
             }
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            logger.error("Exception on getting info on all registered nexo devices. " + e.getMessage());
             e.printStackTrace();
         } catch (IotHubException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Exception on getting info on all registered nexo devices. " + e.getMessage());
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -93,11 +119,53 @@ public class NexoServiceClient {
         try {
             json = objectMapper.writeValueAsString(devices);
         } catch (JsonProcessingException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error("Exception on getting info on all registered nexo devices. " + e.getMessage());
         }
 
         return json;
+    }
+
+    /**
+     * 
+     * @param deviceId
+     * @return
+     */
+    public String readLatestTighteningProcessInfo(final String deviceId) {
+
+        Assert.notNull(this.archiveConnectionString, "No Archive Azure Blob storage configured");
+        Assert.notNull(deviceId, "Parameter 'deviceId' must not be null");
+
+        String result = "{}";
+
+        try {
+            CloudStorageAccount storageAccount = CloudStorageAccount.parse(this.archiveConnectionString);
+            CloudBlobClient blobClient = storageAccount.createCloudBlobClient();
+            CloudBlobContainer container = blobClient.getContainerReference(this.archiveContainername);
+
+            if (container.exists()) {
+                Date maxDate= null;
+                CloudBlockBlob lastBlob = null;
+
+                Iterable<ListBlobItem> iter = container.listBlobs(deviceId + "/");
+                for (ListBlobItem blobItem : iter) {
+                    if (blobItem instanceof CloudBlockBlob) {
+                        Date blobDate = ((CloudBlockBlob)blobItem).getProperties().getLastModified();
+                        if (maxDate == null || blobDate.after(maxDate)) {
+                                maxDate = blobDate;
+                                lastBlob = (CloudBlockBlob)blobItem;
+                        }
+                    }
+                }
+
+                if (lastBlob != null) {
+                    result = lastBlob.downloadText();
+                }
+            }
+        } catch(StorageException | URISyntaxException | InvalidKeyException | IOException ex) {
+            logger.error("Exception on reading the last tightening process info for nexo '" + deviceId);
+        }
+
+        return result;
     }
 
     public String getProtocol() {
@@ -116,9 +184,11 @@ public class NexoServiceClient {
         this.connectionString = connectionString;
     }
 
-    public NexoServiceClient(String protocol, String connectionString) {
+    public NexoServiceClient(String protocol, String connectionString, String archiveConString, String archiveContname) {
         this.protocol = protocol;
         this.connectionString = connectionString;
+        this.archiveConnectionString = archiveConString;
+        this.archiveContainername = archiveContname;
     }
 
     public String getQueryString_ForNexoDevices() {
