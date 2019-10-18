@@ -23,6 +23,9 @@ public class NexoDevice {
     @JsonInclude(Include.NON_NULL)
     private Integer batterylevel;
 
+    @JsonInclude(Include.NON_NULL)
+    private Integer wifilevel;
+
     public String getDeviceID() {
         return deviceID;
     }
@@ -55,9 +58,18 @@ public class NexoDevice {
         this.batterylevel = batterylevel;
     }
 
+    public Integer getWifilevel() {
+        return wifilevel;
+    }
+
+    public void setWifilevel(Integer wifilevel) {
+        this.wifilevel = wifilevel;
+    }
+
     @Override
     public String toString() {
         return "NexoDevice [batterylevel=" + batterylevel + ", deviceID=" + deviceID + ", ipAddress=" + ipAddress
-                + ", type=" + type + "]";
+                + ", type=" + type + ", wifilevel=" + wifilevel + "]";
     }
+    
 }
