@@ -25,6 +25,16 @@ public class NexoDeviceController {
         return ((OpenProtocolCommands)this.nexoDeviceClient).sendROPCommand(rawMessage);
     }
 
+    public boolean activateTool() {
+
+        return this.nexoDeviceClient.activateTool();
+    }
+
+    public boolean deactivateTool() {
+
+        return this.nexoDeviceClient.activateTool();
+    }
+
     public CallwithRawMessageHandler createCallwithRawMessageHandler() {
 
         return new CallwithRawMessageHandler(this);
@@ -33,6 +43,16 @@ public class NexoDeviceController {
     public ShowOnDisplayHandler createShowOnDisplayHandler() {
 
         return new ShowOnDisplayHandler(this);
+    }
+
+    public ActivateMessageHandler createActivateMessageHandler() {
+
+        return new ActivateMessageHandler(this);
+    }
+
+    public DeactivateMessageHandler createDeactivateMessageHandler() {
+
+        return new DeactivateMessageHandler(this);
     }
 
     public NexoDevice getNexoDeviceClient() {

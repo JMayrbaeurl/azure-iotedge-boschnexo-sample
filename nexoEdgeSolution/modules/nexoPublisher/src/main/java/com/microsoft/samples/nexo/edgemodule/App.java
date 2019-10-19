@@ -70,6 +70,8 @@ public class App implements CommandLineRunner {
 
         this.destination.registerDirectMethodHandler("call", this.controller.createCallwithRawMessageHandler());
         this.destination.registerDirectMethodHandler("showOnDisplay", this.controller.createShowOnDisplayHandler());
+        this.destination.registerDirectMethodHandler("activate", this.controller.createActivateMessageHandler());
+        this.destination.registerDirectMethodHandler("deactivate", this.controller.createDeactivateMessageHandler());
     }
 
     @RequestMapping("/")

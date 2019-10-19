@@ -90,6 +90,42 @@ public class NexoServiceClient {
         return response;
     }
 
+    public boolean deactivateTool(final String deviceId) {
+
+        boolean result = false;
+
+        try {
+            DeviceMethod client = DeviceMethod.createFromConnectionString(this.connectionString);
+            MethodResult mresult = client.invoke(deviceId, "deactivate", Long.valueOf(10), Long.valueOf(10), "{}");
+            String response = mresult.getPayload().toString();
+            result = response.contains("true");
+        } catch (IOException ex) {
+            logger.error("Exception on deactivating nexo device with id '" + deviceId + "'");
+        } catch (IotHubException e) {
+            logger.error("Exception on deactivating nexo device with id '" + deviceId + "'");
+        }
+
+        return result;
+    }
+
+    public boolean activateTool(final String deviceId) {
+
+        boolean result = false;
+
+        try {
+            DeviceMethod client = DeviceMethod.createFromConnectionString(this.connectionString);
+            MethodResult mresult = client.invoke(deviceId, "activate", Long.valueOf(10), Long.valueOf(10), "{}");
+            String response = mresult.getPayload().toString();
+            result = response.contains("true");
+        } catch (IOException ex) {
+            logger.error("Exception on activating nexo device with id '" + deviceId + "'");
+        } catch (IotHubException e) {
+            logger.error("Exception on activating nexo device with id '" + deviceId + "'");
+        }
+
+        return result;
+    }
+
     /**
      * 
      * @return

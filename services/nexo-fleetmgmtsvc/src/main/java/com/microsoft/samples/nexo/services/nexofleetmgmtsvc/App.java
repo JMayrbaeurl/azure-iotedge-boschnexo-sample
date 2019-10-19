@@ -60,16 +60,22 @@ public class App {
 	}
 
 	@RequestMapping(value = "/devices/{id}/lock", method = RequestMethod.POST)
-	public void lockDevice(@PathVariable String id)
-	{
+	public void lockDevice(@PathVariable String id) {
 
+		logger.info("Locking Nexo device '" + id + "'");
+
+		if (!this.serviceClient.deactivateTool(id))
+			logger.error("Could not lock Nexo device '" + id + "'");
 	}
 
 	
 	@RequestMapping(value = "/devices/{id}/unlock", method = RequestMethod.POST)
-	public void unlockDevice(@PathVariable String id)
-	{
+	public void unlockDevice(@PathVariable String id) {
 
+		logger.info("Unlocking Nexo device '" + id + "'");
+
+		if (!this.serviceClient.activateTool(id))
+			logger.error("Could not unlock Nexo device '" + id + "'");
 	}
 
 	@RequestMapping(value = "/devices/{id}/latest", method = RequestMethod.GET) 
