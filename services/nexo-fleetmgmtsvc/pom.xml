@@ -16,6 +16,8 @@
 
 	<properties>
 		<java.version>1.8</java.version>
+		<spring-cloud.version>Greenwich.SR3</spring-cloud.version>
+		<docker.image.prefix>jmayrbaeurl</docker.image.prefix>
 	</properties>
 
 	<dependencies>
@@ -27,6 +29,18 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
 		</dependency>
+
+		<!--
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+		</dependency>
+		-->
+
 		<dependency>
 			<groupId>com.microsoft.azure.sdk.iot</groupId>
 			<artifactId>iot-service-client</artifactId>
@@ -45,13 +59,81 @@
 		</dependency>
 	</dependencies>
 
+	<!--
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-dependencies</artifactId>
+				<version>${spring-cloud.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	-->
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<plugin>
+				<groupId>com.spotify</groupId>
+				<artifactId>dockerfile-maven-plugin</artifactId>
+				<version>1.4.13</version>
+				<configuration>
+					<repository>${docker.image.prefix}/${project.artifactId}</repository>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack</id>
+						<phase>package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>${project.groupId}</groupId>
+									<artifactId>${project.artifactId}</artifactId>
+									<version>${project.version}</version>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
+	<!--
+	<profiles>
+		<profile>
+			<id>cloud</id>
+			<repositories>
+				<repository>
+					<id>nexus-snapshots</id>
+					<url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
+			<dependencies>
+				<dependency>
+					<groupId>com.microsoft.azure</groupId>
+					<artifactId>spring-cloud-starter-azure-spring-cloud-client</artifactId>
+					<version>2.1.0-SNAPSHOT</version>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
+	-->
 </project>
