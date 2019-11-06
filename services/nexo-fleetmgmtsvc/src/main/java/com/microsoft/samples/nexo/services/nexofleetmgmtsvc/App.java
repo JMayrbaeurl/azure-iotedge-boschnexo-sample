@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -96,6 +98,9 @@ public class App {
 	@Bean
 	public NexoServiceClient createServiceClient() throws IOException {
 
+		logger.info("Creating service client for IoT Hub connection string '"
+			+ this.connectionString + "' and archive at '" + this.archiveConnectionString + "'");
+
 		NexoServiceClient result = new NexoServiceClient(this.protocol, this.connectionString, 
 			this.archiveConnectionString, this.archiveContainername);
 		result.openConnection();
@@ -110,5 +115,15 @@ public class App {
           .apis(RequestHandlerSelectors.basePackage("com.microsoft.samples.nexo.services.nexofleetmgmtsvc"))              
           .paths(PathSelectors.any())                          
           .build();                                           
+	}
+	
+	@Bean
+	public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**");
+            }
+        };
     }
 }
