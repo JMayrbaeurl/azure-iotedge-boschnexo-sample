@@ -9,6 +9,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -77,7 +83,6 @@ public class App {
 			logger.error("Could not lock Nexo device '" + id + "'");
 	}
 
-	
 	@RequestMapping(value = "/devices/{id}/unlock", method = RequestMethod.POST)
 	public void unlockDevice(@PathVariable String id) {
 
@@ -87,7 +92,7 @@ public class App {
 			logger.error("Could not unlock Nexo device '" + id + "'");
 	}
 
-	@RequestMapping(value = "/devices/{id}/latest", method = RequestMethod.GET) 
+	@RequestMapping(value = "/devices/{id}/latest", method = RequestMethod.GET)
 	public String getLastestTighteningProcessInfo(@PathVariable String id) {
 
 		logger.info("Get latest tightening process info file for '" + id);
@@ -98,25 +103,48 @@ public class App {
 	@Bean
 	public NexoServiceClient createServiceClient() throws IOException {
 
-		logger.info("Creating service client for IoT Hub connection string '"
-			+ this.connectionString + "' and archive at '" + this.archiveConnectionString + "'");
+		logger.info("Creating service client for IoT Hub connection string '" + this.connectionString
+				+ "' and archive at '" + this.archiveConnectionString + "'");
 
-		NexoServiceClient result = new NexoServiceClient(this.protocol, this.connectionString, 
-			this.archiveConnectionString, this.archiveContainername);
+		NexoServiceClient result = new NexoServiceClient(this.protocol, this.connectionString,
+				this.archiveConnectionString, this.archiveContainername);
 		result.openConnection();
 
 		return result;
 	}
 
 	@Bean
-    public Docket api() { 
-        return new Docket(DocumentationType.SWAGGER_2)  
-          .select()                                  
-          .apis(RequestHandlerSelectors.basePackage("com.microsoft.samples.nexo.services.nexofleetmgmtsvc"))              
-          .paths(PathSelectors.any())                          
-          .build();                                           
+	public Docket api() {
+		return new Docket(DocumentationType.SWAGGER_2).select()
+				.apis(RequestHandlerSelectors.basePackage("com.microsoft.samples.nexo.services.nexofleetmgmtsvc"))
+				.paths(PathSelectors.any()).build();
 	}
-	
+
+	@Bean
+	public WebSecurityConfigurerAdapter webSecurityConfigurer() {
+		return new WebSecurityConfigurerAdapter() {
+
+			@Override
+			protected void configure(HttpSecurity http) throws Exception {
+				http.csrf().disable().authorizeRequests().anyRequest().authenticated()
+				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and().httpBasic();
+			}
+
+			
+			@Override
+			protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+				auth.inMemoryAuthentication().withUser("Bosch")
+				.password(pwdEncoder().encode("Robert")).authorities("ROLE_USER");
+			}
+		};
+	}
+
+	@Bean
+	public PasswordEncoder pwdEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
 	@Bean
 	public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
@@ -125,5 +153,5 @@ public class App {
                 registry.addMapping("/**");
             }
         };
-    }
+	}
 }
