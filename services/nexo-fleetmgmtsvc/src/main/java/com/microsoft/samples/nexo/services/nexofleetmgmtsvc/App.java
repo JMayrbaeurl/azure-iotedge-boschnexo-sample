@@ -100,6 +100,24 @@ public class App {
 		return this.serviceClient.readLatestTighteningProcessInfo(id);
 	}
 
+	@RequestMapping(value = "/devices/{id}/programs", method = RequestMethod.GET)
+	@ResponseBody
+	public String getPrograms(@PathVariable String id) {
+
+		logger.info("Get programs for '" + id);
+
+		return this.serviceClient.readPrograms(id);
+	}
+
+	@RequestMapping(value = "/devices/{id}/programs/{prognum}", method = RequestMethod.POST)
+	public void selectProgram(@PathVariable String id, @PathVariable int programNum) {
+
+		logger.info("Select program number '" + programNum + "' on device '" + id + "'");
+
+		if (!this.serviceClient.selectProgramNumber(id, programNum))
+			logger.error("Could not select program number '" + programNum + "' on device '" + id + "'");
+	}
+
 	@Bean
 	public NexoServiceClient createServiceClient() throws IOException {
 

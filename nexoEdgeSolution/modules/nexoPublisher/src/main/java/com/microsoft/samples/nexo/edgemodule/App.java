@@ -72,6 +72,7 @@ public class App implements CommandLineRunner {
         this.destination.registerDirectMethodHandler("showOnDisplay", this.controller.createShowOnDisplayHandler());
         this.destination.registerDirectMethodHandler("activate", this.controller.createActivateMessageHandler());
         this.destination.registerDirectMethodHandler("deactivate", this.controller.createDeactivateMessageHandler());
+        this.destination.registerDirectMethodHandler("programslist", this.controller.createListProgramsMessageHandler());
     }
 
     @RequestMapping("/")
@@ -224,8 +225,8 @@ public class App implements CommandLineRunner {
     public ProvisioningHandler provisioningHandler() {
         return new ProvisioningHandler();
     }
-
-    @Bean 
+    
+    @Bean
     public NexoDevice nexoDevice() {
         
         return NexoDeviceClientFactory.createDefaultNexoDeviceClient(this.nexoDeviceROPIPAddress, this.nexoDeviceROPPort);

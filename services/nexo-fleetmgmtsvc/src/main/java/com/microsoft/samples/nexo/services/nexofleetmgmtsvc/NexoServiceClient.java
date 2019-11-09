@@ -204,6 +204,31 @@ public class NexoServiceClient {
         return result;
     }
 
+    public String readPrograms(final String deviceId) {
+
+        String result = "[]";
+
+        try {
+            DeviceMethod client = DeviceMethod.createFromConnectionString(this.connectionString);
+            MethodResult mresult = client.invoke(deviceId, "programslist", Long.valueOf(10), Long.valueOf(10), "{}");
+            result = mresult.getPayload().toString();
+            
+        } catch (IOException ex) {
+            logger.error("Exception on activating nexo device with id '" + deviceId + "'");
+        } catch (IotHubException e) {
+            logger.error("Exception on activating nexo device with id '" + deviceId + "'");
+        }
+
+        return result;
+    }
+
+    public boolean selectProgramNumber(final String deviceId, final int programNum) {
+
+        // TODO Implement
+        return true;
+    }
+
+
     public String getProtocol() {
         return protocol;
     }

@@ -39,9 +39,17 @@ public class NexoDeviceStateCollector {
         if(this.doSendUpdates) {
             List<Property> props = new ArrayList<Property>();
 
-            this.addBatteryLevel(props);
+            if (this.nexoDeviceClient.openSession()) {
+                try {
+                    this.addBatteryLevel(props);
+                    this.addWIFILevel(props);
+                } finally {
+                    this.nexoDeviceClient.closeSession();
+                }
+            } else
+                logger.error("Could not open communication session with nexo device");
+
             this.addIPAddressOfNexo(props);
-            this.addWIFILevel(props);
 
             if (props != null && props.size() > 0) {
                 try {
@@ -61,7 +69,6 @@ public class NexoDeviceStateCollector {
             if (this.nexoDeviceClient.startCommunication()) {
                 int battLevel = this.nexoDeviceClient.getBatteryLevel();
                 props.add(new Property("batterylevel", Integer.valueOf(battLevel)));
-                this.nexoDeviceClient.stopCommunication();
             }
         } catch (NexoCommException ex) {
             logger.warn("Exception retrieving battery level from Nexo device.");
@@ -74,7 +81,6 @@ public class NexoDeviceStateCollector {
             if (this.nexoDeviceClient.startCommunication()) {
                 int wifiLevel = this.nexoDeviceClient.getWIFILevel();
                 props.add(new Property("wifilevel", Integer.valueOf(wifiLevel)));
-                this.nexoDeviceClient.stopCommunication();
             }
         } catch (NexoCommException ex) {
             logger.warn("Exception retrieving wifi level from Nexo device.");

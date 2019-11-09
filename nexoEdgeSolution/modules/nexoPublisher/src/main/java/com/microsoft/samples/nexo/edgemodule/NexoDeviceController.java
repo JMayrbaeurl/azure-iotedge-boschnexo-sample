@@ -3,6 +3,8 @@ package com.microsoft.samples.nexo.edgemodule;
 import com.microsoft.samples.nexo.openprotocol.NexoDevice;
 import com.microsoft.samples.nexo.openprotocol.OpenProtocolCommands;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -11,6 +13,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class NexoDeviceController {
+
+    private static final Logger logger = LoggerFactory.getLogger(NexoDeviceController.class);
 
     @Autowired
     private NexoDevice nexoDeviceClient;
@@ -35,6 +39,25 @@ public class NexoDeviceController {
         return this.nexoDeviceClient.activateTool();
     }
 
+    public int[] readTighteningprogramNumbers() {
+
+        int[] result = new int[0];
+
+        if (this.nexoDeviceClient.openSession()) {
+            try {
+                if (this.nexoDeviceClient.startCommunication()) {
+                    result = this.nexoDeviceClient.getTighteningprogramNumbers();
+                    //this.nexoDeviceClient.stopCommunication();
+                }
+            } finally {
+                this.nexoDeviceClient.closeSession();
+            }
+        } else
+            logger.error("Could not open communication session with nexo device");
+
+        return result;
+    }
+
     public CallwithRawMessageHandler createCallwithRawMessageHandler() {
 
         return new CallwithRawMessageHandler(this);
@@ -53,6 +76,10 @@ public class NexoDeviceController {
     public DeactivateMessageHandler createDeactivateMessageHandler() {
 
         return new DeactivateMessageHandler(this);
+    }
+
+    public ListProgramsMessageHandler createListProgramsMessageHandler() {
+        return new ListProgramsMessageHandler(this);
     }
 
     public NexoDevice getNexoDeviceClient() {
