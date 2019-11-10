@@ -13,6 +13,7 @@ import com.microsoft.azure.sdk.iot.device.DeviceTwin.DeviceMethodCallback;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.DeviceMethodData;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
 import com.microsoft.azure.sdk.iot.device.transport.IotHubConnectionStatus;
+import com.microsoft.samples.nexo.edgemodule.methods.DirectMethodHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

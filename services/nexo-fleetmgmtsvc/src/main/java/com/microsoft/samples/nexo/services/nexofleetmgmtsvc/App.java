@@ -74,6 +74,16 @@ public class App {
 		return this.serviceClient.getNexoDevices();
 	}
 
+
+	@RequestMapping(value = "/devices/{id}/lockstate", method = RequestMethod.GET)
+	@ResponseBody
+	public String getNexoDeviceLockState(@PathVariable String id) {
+
+		logger.info("Get Nexo device '" + id + "' lock state");
+
+		return this.serviceClient.getLockStateOfNexo(id);
+	}
+
 	@RequestMapping(value = "/devices/{id}/lock", method = RequestMethod.POST)
 	public void lockDevice(@PathVariable String id) {
 
@@ -109,13 +119,13 @@ public class App {
 		return this.serviceClient.readPrograms(id);
 	}
 
-	@RequestMapping(value = "/devices/{id}/programs/{prognum}", method = RequestMethod.POST)
-	public void selectProgram(@PathVariable String id, @PathVariable int programNum) {
+	@RequestMapping(value = "/devices/{id}/programs/{prognum:[\\d]+}", method = RequestMethod.POST)
+	public void selectProgram(@PathVariable String id, @PathVariable int prognum) {
 
-		logger.info("Select program number '" + programNum + "' on device '" + id + "'");
+		logger.info("Select program number '" + prognum + "' on device '" + id + "'");
 
-		if (!this.serviceClient.selectProgramNumber(id, programNum))
-			logger.error("Could not select program number '" + programNum + "' on device '" + id + "'");
+		if (!this.serviceClient.selectProgramNumber(id, prognum))
+			logger.error("Could not select program number '" + prognum + "' on device '" + id + "'");
 	}
 
 	@Bean

@@ -1,4 +1,4 @@
-package com.microsoft.samples.nexo.edgemodule;
+package com.microsoft.samples.nexo.edgemodule.methods;
 
 /**
  * ShowOnDisplayMessage

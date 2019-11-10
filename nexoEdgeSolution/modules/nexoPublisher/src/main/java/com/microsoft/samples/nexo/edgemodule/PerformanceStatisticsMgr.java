@@ -9,6 +9,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import com.microsoft.azure.sdk.iot.device.IotHubStatusCode;
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
+import com.microsoft.samples.nexo.edgemodule.methods.DirectMethodHandler;
+import com.microsoft.samples.nexo.edgemodule.methods.ResetStatsHandler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

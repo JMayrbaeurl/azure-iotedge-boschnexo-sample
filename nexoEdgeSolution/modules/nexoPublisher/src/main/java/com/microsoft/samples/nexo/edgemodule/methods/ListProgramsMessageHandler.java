@@ -1,7 +1,8 @@
-package com.microsoft.samples.nexo.edgemodule;
+package com.microsoft.samples.nexo.edgemodule.methods;
 
 import java.util.Arrays;
 
+import com.microsoft.samples.nexo.edgemodule.NexoDeviceController;
 import com.microsoft.samples.nexo.openprotocol.NexoCommException;
 
 import org.slf4j.Logger;
@@ -30,7 +31,8 @@ public class ListProgramsMessageHandler implements DirectMethodHandler {
         try {
             int[] numbers = this.nexoDeviceController.readTighteningprogramNumbers();  
             if (numbers == null || numbers.length == 0) {
-                result = "[]";
+                result = DirectMethodHandler.STD_ERROR_Response;
+                logger.error("Nexo returned empty array for program numbers");
             } else {
                 result = Arrays.toString(numbers);
             }

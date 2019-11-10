@@ -1,4 +1,6 @@
-package com.microsoft.samples.nexo.edgemodule;
+package com.microsoft.samples.nexo.edgemodule.methods;
+
+import com.microsoft.samples.nexo.edgemodule.PerformanceStatisticsMgr;
 
 /**
  * PerformanceStatisticsMgrHandler

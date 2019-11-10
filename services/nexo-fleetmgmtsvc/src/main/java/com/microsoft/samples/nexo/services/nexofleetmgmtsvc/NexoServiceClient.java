@@ -90,6 +90,23 @@ public class NexoServiceClient {
         return response;
     }
 
+    public String getLockStateOfNexo(final String deviceId) {
+
+        String result = "{ \"lockstate\" : \"unknown\" }";
+
+        try {
+            DeviceMethod client = DeviceMethod.createFromConnectionString(this.connectionString);
+            MethodResult methodResult = client.invoke(deviceId, "activestate", Long.valueOf(10), Long.valueOf(10), "{}");
+            result = methodResult.getPayload().toString();
+        } catch (IOException ex) {
+            logger.error("Exception on getting lock/active state of nexo device with id '" + deviceId + "': " + ex.getMessage());
+        } catch (IotHubException e) {
+            logger.error("Exception on getting lock/active state of nexo device with id '" + deviceId + "': " + e.getMessage());
+        }
+
+        return result;
+    }
+
     public boolean deactivateTool(final String deviceId) {
 
         boolean result = false;
@@ -224,8 +241,22 @@ public class NexoServiceClient {
 
     public boolean selectProgramNumber(final String deviceId, final int programNum) {
 
-        // TODO Implement
-        return true;
+        boolean result = false;
+
+        try {
+            DeviceMethod client = DeviceMethod.createFromConnectionString(this.connectionString);
+            MethodResult mresult = client.invoke(deviceId, "selectprogram", 
+                Long.valueOf(10), Long.valueOf(10), "{ \"programnumber\" : " + Integer.toString(programNum) + " }");
+            String methodResult = mresult.getPayload().toString();
+            result = methodResult.equalsIgnoreCase("OK");
+            
+        } catch (IOException ex) {
+            logger.error("Exception on selecting program on nexo device with id '" + deviceId + "'");
+        } catch (IotHubException e) {
+            logger.error("Exception on selecting program on nexo device with id '" + deviceId + "'");
+        }
+
+        return result;
     }
 
 

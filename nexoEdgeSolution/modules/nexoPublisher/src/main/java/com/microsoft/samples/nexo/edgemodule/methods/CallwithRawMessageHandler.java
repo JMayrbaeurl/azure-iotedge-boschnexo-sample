@@ -1,9 +1,10 @@
-package com.microsoft.samples.nexo.edgemodule;
+package com.microsoft.samples.nexo.edgemodule.methods;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microsoft.samples.nexo.edgemodule.NexoDeviceController;
 import com.microsoft.samples.nexo.openprotocol.NexoCommException;
 
 import org.slf4j.Logger;

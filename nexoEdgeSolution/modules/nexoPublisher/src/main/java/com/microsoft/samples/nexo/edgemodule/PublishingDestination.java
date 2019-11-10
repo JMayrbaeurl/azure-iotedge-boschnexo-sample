@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.microsoft.azure.sdk.iot.device.Message;
 import com.microsoft.azure.sdk.iot.device.DeviceTwin.Property;
+import com.microsoft.samples.nexo.edgemodule.methods.DirectMethodHandler;
 import com.microsoft.samples.nexo.process.TighteningProcess;
 
 public interface PublishingDestination {
