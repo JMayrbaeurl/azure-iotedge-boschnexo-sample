@@ -33,7 +33,7 @@ public class NexoDeviceStateCollector {
     @Value("${nexopublisher_nexoupdates:true}")
     private boolean doSendUpdates;
 
-    @Scheduled(fixedRate = 30000, initialDelay = 7000)
+    @Scheduled(fixedRate = 60000, initialDelay = 15000)
     public void doCollectStateInformation() {
 
         if(this.doSendUpdates) {

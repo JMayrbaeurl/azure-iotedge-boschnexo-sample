@@ -7,13 +7,16 @@ import com.microsoft.samples.nexo.edgemodule.methods.GetActiveStateHandler;
 import com.microsoft.samples.nexo.edgemodule.methods.ListProgramsMessageHandler;
 import com.microsoft.samples.nexo.edgemodule.methods.SelectProgramMessageHandler;
 import com.microsoft.samples.nexo.edgemodule.methods.ShowOnDisplayHandler;
+import com.microsoft.samples.nexo.openprotocol.NexoCommException;
 import com.microsoft.samples.nexo.openprotocol.NexoDevice;
 import com.microsoft.samples.nexo.openprotocol.OpenProtocolCommands;
+import com.microsoft.samples.nexo.openprotocol.PLCOutputSignalChange;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.Assert;
 
 /**
  * NexoDeviceController
@@ -26,28 +29,47 @@ public class NexoDeviceController {
     @Autowired
     private NexoDevice nexoDeviceClient;
 
-    public boolean showOnDisplay(String message, int duration) {
-
-        return this.nexoDeviceClient.showOnDisplay(message, duration);
-    } 
-
-    public String call(final String rawMessage) {
-
-        return ((OpenProtocolCommands)this.nexoDeviceClient).sendROPCommand(rawMessage);
-    }
-
     /**
      * 
+     * @param message
+     * @param duration
      * @return
      */
-    public boolean getLockState() {
+    public boolean showOnDisplay(final String message, int duration) { 
 
         boolean result = true;
+
+        Assert.hasText(message, "Parameter 'message' must not be empty");
 
         if (this.nexoDeviceClient.openSession()) {
             try {
                 if (this.nexoDeviceClient.startCommunication()) {
-                   // TODO
+                   result = this.nexoDeviceClient.showOnDisplay(message, duration);
+                }
+            } finally {
+                this.nexoDeviceClient.closeSession();
+            }
+        } else
+            logger.error("Could not open communication session with nexo device");
+
+        return result;
+    } 
+
+    /**
+     * 
+     * @param rawMessage
+     * @return
+     */
+    public String call(final String rawMessage) {
+
+        String result = "";
+
+        Assert.hasText(rawMessage, "Parameter 'rawMessage' must not be empty");
+
+        if (this.nexoDeviceClient.openSession()) {
+            try {
+                if (this.nexoDeviceClient.startCommunication()) {
+                  result = ((OpenProtocolCommands)this.nexoDeviceClient).sendROPCommand(rawMessage);
                 }
             } finally {
                 this.nexoDeviceClient.closeSession();
@@ -58,6 +80,43 @@ public class NexoDeviceController {
         return result;
     }
 
+    /**
+     * 
+     * @return
+     */
+    public boolean getLockState() throws NexoCommException {
+
+        boolean result = true;
+
+        if (this.nexoDeviceClient.openSession()) {
+            try {
+                if (this.nexoDeviceClient.startCommunication() && this.nexoDeviceClient.subscribeToTighteningResults()) {
+                    PLCOutputSignalChange signals = this.nexoDeviceClient.subscribeToOutputSignalChange();
+                    if (signals != null && signals.numberOfSignals() > 0) {
+                        // Hardcoded signal decoding - First is Enable/Active signal
+                        result = signals.isSignalSet(0);
+                    } else {
+                        this.nexoDeviceClient.unsubscribeFromTighteningResults();
+                        throw new NexoCommException("Could not get PLC Output signals from nexo device");
+                    }
+
+                    this.nexoDeviceClient.unsubscribeFromTighteningResults();
+                }
+            } finally {
+                this.nexoDeviceClient.closeSession();
+            }
+        } else {
+            logger.error("Could not open communication session with nexo device");
+            throw new NexoCommException("Could not open communication session with nexo device");
+        }
+
+        return result;
+    }
+
+    /**
+     * 
+     * @return
+     */
     public boolean activateTool() {
 
         boolean result = false;
