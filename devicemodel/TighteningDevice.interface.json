@@ -1,38 +1,175 @@
 {
   "@id": "urn:BoschRexrothNexo:TighteningDevice:1",
   "@type": "Interface",
-  "displayName": "Tightening device",
+  "displayName": {
+    "en": "Tightening device"
+  },
   "contents": [
     {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:batterylevel:1",
       "@type": "Property",
-      "name": "batterylevel",
       "comment": "Integer value in the range of 0 and 100 for current battery level of the Nexo device",
-      "displayName": "Battery Level",
-      "writable": false,
+      "displayName": {
+        "en": "Battery Level"
+      },
+      "name": "batterylevel",
+      "displayUnit": {
+        "en": "%"
+      },
+      "schema": "integer",
+      "unit": "Units/Humidity/percent"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:numberOfRequest:1",
+      "@type": "Property",
+      "displayName": {
+        "en": "Number of requests"
+      },
+      "name": "numberOfRequest",
       "schema": "integer"
     },
     {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:numberOfDeliveries:1",
+      "@type": "Property",
+      "displayName": {
+        "en": "Number of Deliveries"
+      },
+      "name": "numberOfDeliveries",
+      "schema": "integer"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:ipaddress:1",
+      "@type": "Property",
+      "displayName": {
+        "en": "IP address"
+      },
+      "name": "ipaddress",
+      "schema": "string"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:wifilevel:1",
+      "@type": "Property",
+      "displayName": {
+        "en": "WIFI quality"
+      },
+      "name": "wifilevel",
+      "schema": "integer"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:showOnDisplay:1",
+      "@type": "Command",
+      "commandType": "synchronous",
+      "request": [
+        {
+          "@id": "urn:BoschRexrothNexo:TighteningDevice:showOnDisplay:message:1",
+          "@type": "SchemaField",
+          "displayName": {
+            "en": "Message"
+          },
+          "name": "message",
+          "schema": "string"
+        },
+        {
+          "@id": "urn:BoschRexrothNexo:TighteningDevice:showOnDisplay:duration:1",
+          "@type": "SchemaField",
+          "displayName": {
+            "en": "Duration"
+          },
+          "name": "duration",
+          "schema": "integer"
+        }
+      ],
+      "description": {
+        "en": "This command will show a message on the display of the Nexo device"
+      },
+      "displayName": {
+        "en": "Display"
+      },
+      "name": "showOnDisplay"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:idcode:1",
       "@type": "Telemetry",
-      "comment": "See Bosch docu.",
+      "displayName": {
+        "en": "ID"
+      },
       "name": "idcode",
       "schema": "string"
     },
     {
-      "@type": "Command",
-      "description": "This command will show a message on the display of the Nexo device.",
-      "name": "showOnDisplay",
-      "commandType": "synchronous",
-      "request": [
-        {
-        "name": "message",
-        "schema": "string"
-        },
-        {
-          "name": "duration",
-          "schema": "integer"
-        }
-      ]
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:cycle:1",
+      "@type": "Telemetry",
+      "displayName": {
+        "en": "Cycle"
+      },
+      "name": "cycle",
+      "schema": "long"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:steprow:1",
+      "@type": "Telemetry",
+      "displayName": {
+        "en": "Step row"
+      },
+      "name": "steprow",
+      "schema": "string"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:stepcol:1",
+      "@type": "Telemetry",
+      "displayName": {
+        "en": "Step col"
+      },
+      "name": "stepcol",
+      "schema": "string"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:stepIndex:1",
+      "@type": "Telemetry",
+      "displayName": {
+        "en": "Step index"
+      },
+      "name": "stepIndex",
+      "schema": "integer"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:graphIndex:1",
+      "@type": "Telemetry",
+      "displayName": {
+        "en": "Graph index"
+      },
+      "name": "graphIndex",
+      "schema": "integer"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:timestamp:1",
+      "@type": "Telemetry",
+      "displayName": {
+        "en": "Time"
+      },
+      "name": "timestamp",
+      "schema": "time"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:angle:1",
+      "@type": "Telemetry",
+      "displayName": {
+        "en": "Angle"
+      },
+      "name": "angle",
+      "schema": "integer"
+    },
+    {
+      "@id": "urn:BoschRexrothNexo:TighteningDevice:torque:1",
+      "@type": "Telemetry",
+      "displayName": {
+        "en": "Torque"
+      },
+      "name": "torque",
+      "schema": "double"
     }
   ],
-  "@context": "http://azureiot.com/v1/contexts/IoTModel.json"
+  "@context": [
+    "http://azureiot.com/v1/contexts/IoTModel.json"
+  ]
 }

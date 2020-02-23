@@ -4,10 +4,17 @@
   "displayName": "Bosch Rexroth Nexo capability model",
   "implements": [
     {
+      "@id": "urn:BoschRexroth:Nexo:Tightening:1",
+      "@type": "InterfaceInstance",
+      "displayName": {
+        "en": "Tightening device"
+      },
       "schema": "urn:BoschRexrothNexo:TighteningDevice:1",
       "name": "tighteningDevice"
     },
     {
+      "@id": "urn:BoschRexroth:Nexo:DeviceInfo:1",
+      "@type": "InterfaceInstance",
       "schema": "urn:azureiot:DeviceManagement:DeviceInformation:1",
       "name": "deviceInfo"
     }
