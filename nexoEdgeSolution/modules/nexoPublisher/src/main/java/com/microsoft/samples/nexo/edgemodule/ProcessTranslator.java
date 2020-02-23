@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,7 +58,7 @@ public class ProcessTranslator {
                             
                             try {
                                 String jsonString = objectMapper.writeValueAsString(anEntry);
-                                Message message = this.createMessage(jsonString, processInfo, step, messageFactory);
+                                Message message = this.createMessage(jsonString, processInfo, step, anEntry, messageFactory);
 
                                 logger.debug("Now streaming graph entry: " + jsonString);
 
@@ -93,11 +94,17 @@ public class ProcessTranslator {
         return anEntry;
     }
 
-    private Message createMessage(final String jsonString, final TighteningProcess processInfo, final TighteningStep step, final MessageFactory messageFactory) {
+    private Message createMessage(final String jsonString, final TighteningProcess processInfo, final TighteningStep step, 
+        final TighteningStepGraphEntry entry, final MessageFactory messageFactory) {
 
         Message message = messageFactory.createMessageForGraphEntry(jsonString);                      
         message.setProperty("channel", Integer.toString(processInfo.getCycle()));
         message.setProperty("result", step.getResult());
+
+        // Make IoT Central happy - Application timestamp UTC in ISO8601 format 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        message.setProperty("iothub-creation-time-utc", sdf.format(entry.getTimestamp()));
 
         return message;
     }
